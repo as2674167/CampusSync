@@ -38,10 +38,12 @@ const MyRegistrations = () => {
       setLoading(true)
       const params = filter !== 'all' ? { status: filter } : {}
       const response = await registrationsAPI.getRegistrations(params)
-      setRegistrations(response.data.registrations)
-      setStats(response.data.stats)
+      setRegistrations(response?.data?.registrations || [])
+      setStats(response?.data?.stats || {})
     } catch (error) {
       console.error('Error fetching registrations:', error)
+      setRegistrations([])
+      setStats({})
     } finally {
       setLoading(false)
     }
@@ -106,9 +108,8 @@ const MyRegistrations = () => {
           </p>
         </div>
 
-        {/* Stats row – with stronger hover */}
+        {/* Stats row */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4 mb-8">
-          {/* Confirmed */}
           <div className="group relative overflow-hidden rounded-[26px] bg-gradient-to-br from-blue-50 via-white to-blue-100/70 p-[1px] shadow-[0_12px_40px_rgba(37,99,235,0.25)] transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_70px_rgba(37,99,235,0.40)]">
             <div className="flex items-center justify-between rounded-[24px] bg-white/90 px-5 py-4 backdrop-blur transition-colors duration-300 group-hover:bg-blue-50/80">
               <div className="flex items-center gap-3">
@@ -120,14 +121,13 @@ const MyRegistrations = () => {
                     Confirmed
                   </p>
                   <p className="text-2xl font-semibold tracking-tight text-slate-900">
-                    {stats.registered || 0}
+                    {stats?.registered || 0}
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Attended */}
           <div className="group relative overflow-hidden rounded-[26px] bg-gradient-to-br from-emerald-50 via-white to-emerald-100/70 p-[1px] shadow-[0_12px_40px_rgba(16,185,129,0.25)] transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_70px_rgba(16,185,129,0.40)]">
             <div className="flex items-center justify-between rounded-[24px] bg-white/90 px-5 py-4 backdrop-blur transition-colors duration-300 group-hover:bg-emerald-50/80">
               <div className="flex items-center gap-3">
@@ -139,14 +139,13 @@ const MyRegistrations = () => {
                     Attended
                   </p>
                   <p className="text-2xl font-semibold tracking-tight text-emerald-600">
-                    {stats.attended || 0}
+                    {stats?.attended || 0}
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Waitlisted */}
           <div className="group relative overflow-hidden rounded-[26px] bg-gradient-to-br from-amber-50 via-white to-yellow-100/70 p-[1px] shadow-[0_12px_40px_rgba(245,158,11,0.25)] transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_70px_rgba(245,158,11,0.40)]">
             <div className="flex items-center justify-between rounded-[24px] bg-white/90 px-5 py-4 backdrop-blur transition-colors duration-300 group-hover:bg-amber-50/80">
               <div className="flex items-center gap-3">
@@ -158,14 +157,13 @@ const MyRegistrations = () => {
                     Waitlisted
                   </p>
                   <p className="text-2xl font-semibold tracking-tight text-amber-600">
-                    {stats.waitlisted || 0}
+                    {stats?.waitlisted || 0}
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Cancelled */}
           <div className="group relative overflow-hidden rounded-[26px] bg-gradient-to-br from-rose-50 via-white to-rose-100/70 p-[1px] shadow-[0_12px_40px_rgba(239,68,68,0.25)] transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_70px_rgba(239,68,68,0.40)]">
             <div className="flex items-center justify-between rounded-[24px] bg-white/90 px-5 py-4 backdrop-blur transition-colors duration-300 group-hover:bg-rose-50/80">
               <div className="flex items-center gap-3">
@@ -177,7 +175,7 @@ const MyRegistrations = () => {
                     Cancelled
                   </p>
                   <p className="text-2xl font-semibold tracking-tight text-rose-500">
-                    {stats.cancelled || 0}
+                    {stats?.cancelled || 0}
                   </p>
                 </div>
               </div>
@@ -185,7 +183,7 @@ const MyRegistrations = () => {
           </div>
         </div>
 
-        {/* Filters – stronger hover */}
+        {/* Filters */}
         <div className="mb-6">
           <div className="flex flex-wrap gap-2">
             {filters.map((f) => {
@@ -234,106 +232,152 @@ const MyRegistrations = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {registrations.map((registration) => (
-              <div
-                key={registration._id}
-                className="group rounded-[26px] border border-white/70 bg-white/95 p-6 shadow-[0_16px_40px_rgba(15,23,42,0.12)] transition-all duration-300 hover:-translate-y-1.5 hover:border-blue-200 hover:shadow-[0_26px_70px_rgba(59,130,246,0.25)]"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    {/* Title + status chip */}
-                    <div className="mb-3 flex flex-wrap items-center gap-3">
-                      <Link
-                        to={`/events/${registration.event._id}`}
-                        className="truncate text-lg md:text-xl font-semibold text-slate-900 transition-colors duration-200 group-hover:text-blue-700"
-                      >
-                        {registration.event.title}
-                      </Link>
-                      <span
-                        className={`inline-flex items-center rounded-full px-4 py-1 text-[11px] font-semibold uppercase tracking-wide ${getStatusChipClass(
-                          registration.status
-                        )} transition-all duration-200 hover:shadow-[0_10px_26px_rgba(15,23,42,0.45)] hover:-translate-y-0.5`}
-                      >
-                        {registration.status}
-                      </span>
-                    </div>
+            {registrations.map((registration) => {
+              const event = registration?.event
 
-                    {/* Detail grid */}
-                    <div className="mt-2 grid gap-4 md:grid-cols-2">
-                      <div className="space-y-2 text-sm text-slate-600">
-                        <div className="flex items-center">
-                          <Calendar className="mr-2 h-4 w-4 text-blue-500" />
-                          <span>
-                            {formatDate(registration.event.date)} at{' '}
-                            {formatTime(registration.event.time)}
+              if (!event) {
+                return (
+                  <div
+                    key={registration?._id}
+                    className="group rounded-[26px] border border-dashed border-slate-300 bg-white/95 p-6 shadow-[0_16px_40px_rgba(15,23,42,0.08)]"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="mb-3 flex flex-wrap items-center gap-3">
+                          <div className="truncate text-lg md:text-xl font-semibold text-slate-700">
+                            Event unavailable
+                          </div>
+                          <span
+                            className={`inline-flex items-center rounded-full px-4 py-1 text-[11px] font-semibold uppercase tracking-wide ${getStatusChipClass(
+                              registration?.status
+                            )}`}
+                          >
+                            {registration?.status || 'unknown'}
                           </span>
                         </div>
-                        <div className="flex items-center">
-                          <MapPin className="mr-2 h-4 w-4 text-pink-500" />
-                          <span>{registration.event.venue}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Users className="mr-2 h-4 w-4 text-violet-500" />
-                          <span>{registration.event.category}</span>
-                        </div>
-                      </div>
 
-                      <div className="space-y-1 text-sm text-slate-600">
-                        <div>
+                        <p className="text-sm text-slate-600">
+                          This registration is linked to an event that may have been deleted or is no longer available.
+                        </p>
+
+                        <div className="mt-3 text-sm text-slate-600">
                           <span className="font-medium text-slate-700">
                             Registered:
                           </span>
                           <span className="ml-1">
-                            {formatDate(registration.registrationDate)}
-                          </span>
-                        </div>
-                        {registration.checkInTime && (
-                          <div>
-                            <span className="font-medium text-slate-700">
-                              Checked In:
-                            </span>
-                            <span className="ml-1">
-                              {formatDate(registration.checkInTime)}
-                            </span>
-                          </div>
-                        )}
-                        <div>
-                          <span className="font-medium text-slate-700">
-                            Organizer:
-                          </span>
-                          <span className="ml-1">
-                            {registration.event.organizer?.name}
+                            {registration?.registrationDate
+                              ? formatDate(registration.registrationDate)
+                              : 'Unavailable'}
                           </span>
                         </div>
                       </div>
                     </div>
-
-                    {/* Description */}
-                    {registration.event.description && (
-                      <p className="mt-3 text-sm text-slate-600 line-clamp-2">
-                        {registration.event.description}
-                      </p>
-                    )}
                   </div>
+                )
+              }
 
-                  {/* Cancel button */}
-                  <div className="ml-2 flex-shrink-0">
-                    {registration.status === 'registered' &&
-                      new Date(registration.event.date) > new Date() && (
-                        <button
-                          onClick={() =>
-                            handleCancelRegistration(registration._id)
-                          }
-                          className="inline-flex items-center rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-600 transition-all duration-200 hover:bg-rose-100 hover:border-rose-300 hover:-translate-y-0.5 hover:shadow-[0_10px_26px_rgba(239,68,68,0.35)]"
+              return (
+                <div
+                  key={registration?._id}
+                  className="group rounded-[26px] border border-white/70 bg-white/95 p-6 shadow-[0_16px_40px_rgba(15,23,42,0.12)] transition-all duration-300 hover:-translate-y-1.5 hover:border-blue-200 hover:shadow-[0_26px_70px_rgba(59,130,246,0.25)]"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="mb-3 flex flex-wrap items-center gap-3">
+                        <Link
+                          to={`/events/${event?._id}`}
+                          className="truncate text-lg md:text-xl font-semibold text-slate-900 transition-colors duration-200 group-hover:text-blue-700"
                         >
-                          <X className="mr-1 h-4 w-4" />
-                          Cancel
-                        </button>
+                          {event?.title || 'Untitled Event'}
+                        </Link>
+                        <span
+                          className={`inline-flex items-center rounded-full px-4 py-1 text-[11px] font-semibold uppercase tracking-wide ${getStatusChipClass(
+                            registration?.status
+                          )} transition-all duration-200 hover:shadow-[0_10px_26px_rgba(15,23,42,0.45)] hover:-translate-y-0.5`}
+                        >
+                          {registration?.status}
+                        </span>
+                      </div>
+
+                      <div className="mt-2 grid gap-4 md:grid-cols-2">
+                        <div className="space-y-2 text-sm text-slate-600">
+                          <div className="flex items-center">
+                            <Calendar className="mr-2 h-4 w-4 text-blue-500" />
+                            <span>
+                              {event?.date ? formatDate(event.date) : 'Date unavailable'} at{' '}
+                              {event?.time ? formatTime(event.time) : 'Time unavailable'}
+                            </span>
+                          </div>
+                          <div className="flex items-center">
+                            <MapPin className="mr-2 h-4 w-4 text-pink-500" />
+                            <span>{event?.venue || 'Venue unavailable'}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Users className="mr-2 h-4 w-4 text-violet-500" />
+                            <span>{event?.category || 'General'}</span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-1 text-sm text-slate-600">
+                          <div>
+                            <span className="font-medium text-slate-700">
+                              Registered:
+                            </span>
+                            <span className="ml-1">
+                              {registration?.registrationDate
+                                ? formatDate(registration.registrationDate)
+                                : 'Unavailable'}
+                            </span>
+                          </div>
+
+                          {registration?.checkInTime && (
+                            <div>
+                              <span className="font-medium text-slate-700">
+                                Checked In:
+                              </span>
+                              <span className="ml-1">
+                                {formatDate(registration.checkInTime)}
+                              </span>
+                            </div>
+                          )}
+
+                          <div>
+                            <span className="font-medium text-slate-700">
+                              Organizer:
+                            </span>
+                            <span className="ml-1">
+                              {event?.organizer?.name || 'Unavailable'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {event?.description && (
+                        <p className="mt-3 text-sm text-slate-600 line-clamp-2">
+                          {event.description}
+                        </p>
                       )}
+                    </div>
+
+                    <div className="ml-2 flex-shrink-0">
+                      {registration?.status === 'registered' &&
+                        event?.date &&
+                        new Date(event.date) > new Date() && (
+                          <button
+                            onClick={() =>
+                              handleCancelRegistration(registration._id)
+                            }
+                            className="inline-flex items-center rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-600 transition-all duration-200 hover:bg-rose-100 hover:border-rose-300 hover:-translate-y-0.5 hover:shadow-[0_10px_26px_rgba(239,68,68,0.35)]"
+                          >
+                            <X className="mr-1 h-4 w-4" />
+                            Cancel
+                          </button>
+                        )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
