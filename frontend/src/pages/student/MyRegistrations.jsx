@@ -1,7 +1,16 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { registrationsAPI } from '../../services/api'
-import { Calendar, MapPin, Clock, Users, Filter, X } from 'lucide-react'
+import {
+  Calendar,
+  MapPin,
+  Clock,
+  Users,
+  X,
+  CheckCircle,
+  Clock3,
+  AlertTriangle
+} from 'lucide-react'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import { formatDate, formatTime } from '../../utils/helpers'
 import toast from 'react-hot-toast'
@@ -13,7 +22,7 @@ const MyRegistrations = () => {
   const [stats, setStats] = useState({})
 
   const filters = [
-    { value: 'all', label: 'All Registrations' },
+    { value: 'all', label: 'All' },
     { value: 'registered', label: 'Confirmed' },
     { value: 'waitlisted', label: 'Waitlisted' },
     { value: 'attended', label: 'Attended' },
@@ -41,167 +50,286 @@ const MyRegistrations = () => {
   const handleCancelRegistration = async (registrationId) => {
     if (window.confirm('Are you sure you want to cancel this registration?')) {
       try {
-        await registrationsAPI.updateRegistration(registrationId, { status: 'cancelled' })
+        await registrationsAPI.updateRegistration(registrationId, {
+          status: 'cancelled'
+        })
         toast.success('Registration cancelled successfully')
         fetchRegistrations()
       } catch (error) {
-        const message = error.response?.data?.message || 'Failed to cancel registration'
+        const message =
+          error.response?.data?.message || 'Failed to cancel registration'
         toast.error(message)
       }
     }
   }
 
-  const getStatusColor = (status) => {
-    const colors = {
-      registered: 'bg-green-100 text-green-800',
-      waitlisted: 'bg-yellow-100 text-yellow-800',
-      cancelled: 'bg-red-100 text-red-800',
-      attended: 'bg-blue-100 text-blue-800'
+  const getStatusChipClass = (status) => {
+    switch (status) {
+      case 'registered':
+        return 'bg-slate-900 text-white'
+      case 'waitlisted':
+        return 'bg-amber-500 text-white'
+      case 'attended':
+        return 'bg-emerald-500 text-white'
+      case 'cancelled':
+        return 'bg-rose-500 text-white'
+      default:
+        return 'bg-slate-500 text-white'
     }
-    return colors[status] || 'bg-gray-100 text-gray-800'
+  }
+
+  const getStatusFilterColor = (value) => {
+    switch (value) {
+      case 'registered':
+        return 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+      case 'waitlisted':
+        return 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+      case 'attended':
+        return 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+      case 'cancelled':
+        return 'bg-rose-50 text-rose-700 hover:bg-rose-100'
+      default:
+        return 'bg-slate-50 text-slate-700 hover:bg-slate-100'
+    }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.18),_transparent_40%),radial-gradient(circle_at_bottom_right,_rgba(129,140,248,0.16),_transparent_35%),linear-gradient(to_bottom,_#f5f7ff,_#edf2ff,_#f8fafc)] py-10">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">My Registrations</h1>
-          <p className="text-gray-600 mt-2">Track and manage your event registrations</p>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+            My Registrations
+          </h1>
+          <p className="mt-2 text-slate-600">
+            Here’s everything you’ve signed up for on campus
+          </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="card p-4">
-            <div className="text-2xl font-bold text-gray-900">{stats.registered || 0}</div>
-            <div className="text-sm text-gray-600">Confirmed</div>
+        {/* Stats row – with stronger hover */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4 mb-8">
+          {/* Confirmed */}
+          <div className="group relative overflow-hidden rounded-[26px] bg-gradient-to-br from-blue-50 via-white to-blue-100/70 p-[1px] shadow-[0_12px_40px_rgba(37,99,235,0.25)] transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_70px_rgba(37,99,235,0.40)]">
+            <div className="flex items-center justify-between rounded-[24px] bg-white/90 px-5 py-4 backdrop-blur transition-colors duration-300 group-hover:bg-blue-50/80">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 shadow-[0_10px_22px_rgba(37,99,235,0.40)] transition-transform duration-300 group-hover:scale-110">
+                  <CheckCircle className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">
+                    Confirmed
+                  </p>
+                  <p className="text-2xl font-semibold tracking-tight text-slate-900">
+                    {stats.registered || 0}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="card p-4">
-            <div className="text-2xl font-bold text-yellow-600">{stats.waitlisted || 0}</div>
-            <div className="text-sm text-gray-600">Waitlisted</div>
+
+          {/* Attended */}
+          <div className="group relative overflow-hidden rounded-[26px] bg-gradient-to-br from-emerald-50 via-white to-emerald-100/70 p-[1px] shadow-[0_12px_40px_rgba(16,185,129,0.25)] transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_70px_rgba(16,185,129,0.40)]">
+            <div className="flex items-center justify-between rounded-[24px] bg-white/90 px-5 py-4 backdrop-blur transition-colors duration-300 group-hover:bg-emerald-50/80">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 shadow-[0_10px_22px_rgba(16,185,129,0.40)] transition-transform duration-300 group-hover:scale-110">
+                  <Users className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">
+                    Attended
+                  </p>
+                  <p className="text-2xl font-semibold tracking-tight text-emerald-600">
+                    {stats.attended || 0}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="card p-4">
-            <div className="text-2xl font-bold text-blue-600">{stats.attended || 0}</div>
-            <div className="text-sm text-gray-600">Attended</div>
+
+          {/* Waitlisted */}
+          <div className="group relative overflow-hidden rounded-[26px] bg-gradient-to-br from-amber-50 via-white to-yellow-100/70 p-[1px] shadow-[0_12px_40px_rgba(245,158,11,0.25)] transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_70px_rgba(245,158,11,0.40)]">
+            <div className="flex items-center justify-between rounded-[24px] bg-white/90 px-5 py-4 backdrop-blur transition-colors duration-300 group-hover:bg-amber-50/80">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-500 shadow-[0_10px_22px_rgba(245,158,11,0.40)] transition-transform duration-300 group-hover:scale-110">
+                  <Clock3 className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">
+                    Waitlisted
+                  </p>
+                  <p className="text-2xl font-semibold tracking-tight text-amber-600">
+                    {stats.waitlisted || 0}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="card p-4">
-            <div className="text-2xl font-bold text-red-600">{stats.cancelled || 0}</div>
-            <div className="text-sm text-gray-600">Cancelled</div>
+
+          {/* Cancelled */}
+          <div className="group relative overflow-hidden rounded-[26px] bg-gradient-to-br from-rose-50 via-white to-rose-100/70 p-[1px] shadow-[0_12px_40px_rgba(239,68,68,0.25)] transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_70px_rgba(239,68,68,0.40)]">
+            <div className="flex items-center justify-between rounded-[24px] bg-white/90 px-5 py-4 backdrop-blur transition-colors duration-300 group-hover:bg-rose-50/80">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-rose-50 text-rose-500 shadow-[0_10px_22px_rgba(239,68,68,0.40)] transition-transform duration-300 group-hover:scale-110">
+                  <AlertTriangle className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">
+                    Cancelled
+                  </p>
+                  <p className="text-2xl font-semibold tracking-tight text-rose-500">
+                    {stats.cancelled || 0}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Filter Buttons */}
+        {/* Filters – stronger hover */}
         <div className="mb-6">
           <div className="flex flex-wrap gap-2">
-            {filters.map((filterOption) => (
-              <button
-                key={filterOption.value}
-                onClick={() => setFilter(filterOption.value)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 $${
-                  filter === filterOption.value
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                }`}
-              >
-                {filterOption.label}
-              </button>
-            ))}
+            {filters.map((f) => {
+              const active = filter === f.value
+              return (
+                <button
+                  key={f.value}
+                  onClick={() => setFilter(f.value)}
+                  className={`rounded-full px-4 py-1.5 text-xs md:text-sm font-medium transition-all duration-200 ${
+                    active
+                      ? 'bg-slate-900 text-white shadow-[0_10px_30px_rgba(15,23,42,0.55)] scale-[1.03]'
+                      : `${getStatusFilterColor(
+                          f.value
+                        )} border border-transparent hover:border-slate-300 hover:shadow-[0_8px_22px_rgba(15,23,42,0.18)] hover:scale-[1.02]`
+                  }`}
+                >
+                  {f.label}
+                </button>
+              )
+            })}
           </div>
         </div>
 
-        {/* Registrations List */}
+        {/* Registrations list */}
         {loading ? (
           <div className="flex justify-center items-center py-12">
             <LoadingSpinner size="large" text="Loading registrations..." />
           </div>
         ) : registrations.length === 0 ? (
-          <div className="text-center py-12">
-            <Users className="mx-auto h-16 w-16 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No registrations found</h3>
-            <p className="text-gray-600 mb-6">
-              {filter === 'all' 
-                ? "You haven't registered for any events yet." 
+          <div className="rounded-3xl border border-white/70 bg-white/95 py-12 px-6 text-center shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
+            <Users className="mx-auto mb-4 h-12 w-12 text-slate-400" />
+            <h3 className="mb-2 text-lg font-semibold text-slate-900">
+              No registrations found
+            </h3>
+            <p className="mb-6 text-sm text-slate-600">
+              {filter === 'all'
+                ? "You haven't registered for any events yet."
                 : `No ${filter} registrations found.`}
             </p>
-            <Link to="/events" className="btn btn-primary">
+            <Link
+              to="/events"
+              className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-600 to-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(79,70,229,0.45)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(79,70,229,0.55)]"
+            >
               Browse Events
             </Link>
           </div>
         ) : (
           <div className="space-y-4">
             {registrations.map((registration) => (
-              <div key={registration._id} className="card p-6 hover:shadow-md transition-shadow duration-200">
-                <div className="flex items-start justify-between">
+              <div
+                key={registration._id}
+                className="group rounded-[26px] border border-white/70 bg-white/95 p-6 shadow-[0_16px_40px_rgba(15,23,42,0.12)] transition-all duration-300 hover:-translate-y-1.5 hover:border-blue-200 hover:shadow-[0_26px_70px_rgba(59,130,246,0.25)]"
+              >
+                <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-3 mb-2">
+                    {/* Title + status chip */}
+                    <div className="mb-3 flex flex-wrap items-center gap-3">
                       <Link
                         to={`/events/${registration.event._id}`}
-                        className="text-xl font-semibold text-gray-900 hover:text-blue-600"
+                        className="truncate text-lg md:text-xl font-semibold text-slate-900 transition-colors duration-200 group-hover:text-blue-700"
                       >
                         {registration.event.title}
                       </Link>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(registration.status)}`}>
+                      <span
+                        className={`inline-flex items-center rounded-full px-4 py-1 text-[11px] font-semibold uppercase tracking-wide ${getStatusChipClass(
+                          registration.status
+                        )} transition-all duration-200 hover:shadow-[0_10px_26px_rgba(15,23,42,0.45)] hover:-translate-y-0.5`}
+                      >
                         {registration.status}
                       </span>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-4 mt-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Calendar className="h-4 w-4 mr-2" />
-                          {formatDate(registration.event.date)} at {formatTime(registration.event.time)}
+                    {/* Detail grid */}
+                    <div className="mt-2 grid gap-4 md:grid-cols-2">
+                      <div className="space-y-2 text-sm text-slate-600">
+                        <div className="flex items-center">
+                          <Calendar className="mr-2 h-4 w-4 text-blue-500" />
+                          <span>
+                            {formatDate(registration.event.date)} at{' '}
+                            {formatTime(registration.event.time)}
+                          </span>
                         </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <MapPin className="h-4 w-4 mr-2" />
-                          {registration.event.venue}
+                        <div className="flex items-center">
+                          <MapPin className="mr-2 h-4 w-4 text-pink-500" />
+                          <span>{registration.event.venue}</span>
                         </div>
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Users className="h-4 w-4 mr-2" />
-                          {registration.event.category}
+                        <div className="flex items-center">
+                          <Users className="mr-2 h-4 w-4 text-violet-500" />
+                          <span>{registration.event.category}</span>
                         </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <div className="text-sm">
-                          <span className="font-medium text-gray-700">Registered:</span>
-                          <span className="ml-2 text-gray-600">
+                      <div className="space-y-1 text-sm text-slate-600">
+                        <div>
+                          <span className="font-medium text-slate-700">
+                            Registered:
+                          </span>
+                          <span className="ml-1">
                             {formatDate(registration.registrationDate)}
                           </span>
                         </div>
                         {registration.checkInTime && (
-                          <div className="text-sm">
-                            <span className="font-medium text-gray-700">Checked In:</span>
-                            <span className="ml-2 text-gray-600">
+                          <div>
+                            <span className="font-medium text-slate-700">
+                              Checked In:
+                            </span>
+                            <span className="ml-1">
                               {formatDate(registration.checkInTime)}
                             </span>
                           </div>
                         )}
-                        <div className="text-sm">
-                          <span className="font-medium text-gray-700">Organizer:</span>
-                          <span className="ml-2 text-gray-600">
+                        <div>
+                          <span className="font-medium text-slate-700">
+                            Organizer:
+                          </span>
+                          <span className="ml-1">
                             {registration.event.organizer?.name}
                           </span>
                         </div>
                       </div>
                     </div>
 
+                    {/* Description */}
                     {registration.event.description && (
-                      <p className="mt-4 text-sm text-gray-600 line-clamp-2">
+                      <p className="mt-3 text-sm text-slate-600 line-clamp-2">
                         {registration.event.description}
                       </p>
                     )}
                   </div>
 
-                  <div className="ml-4 flex-shrink-0">
-                    {registration.status === 'registered' && new Date(registration.event.date) > new Date() && (
-                      <button
-                        onClick={() => handleCancelRegistration(registration._id)}
-                        className="btn btn-outline text-red-600 border-red-300 hover:bg-red-50 text-sm"
-                      >
-                        <X className="h-4 w-4 mr-1" />
-                        Cancel
-                      </button>
-                    )}
+                  {/* Cancel button */}
+                  <div className="ml-2 flex-shrink-0">
+                    {registration.status === 'registered' &&
+                      new Date(registration.event.date) > new Date() && (
+                        <button
+                          onClick={() =>
+                            handleCancelRegistration(registration._id)
+                          }
+                          className="inline-flex items-center rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-600 transition-all duration-200 hover:bg-rose-100 hover:border-rose-300 hover:-translate-y-0.5 hover:shadow-[0_10px_26px_rgba(239,68,68,0.35)]"
+                        >
+                          <X className="mr-1 h-4 w-4" />
+                          Cancel
+                        </button>
+                      )}
                   </div>
                 </div>
               </div>

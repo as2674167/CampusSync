@@ -1,7 +1,14 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-import { Menu, X, Calendar, User, LogOut, Settings, LayoutDashboard } from 'lucide-react'
+import {
+  Menu,
+  X,
+  Calendar,
+  User,
+  LogOut,
+  LayoutDashboard
+} from 'lucide-react'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -35,28 +42,31 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="navbar-shell">
+      <div className="nav-inner max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
-              <Calendar className="h-8 w-8 text-blue-600" />
-              <span className="font-bold text-xl gradient-text">EventHub</span>
+            <Link to="/" className="flex items-center gap-2">
+              <div className="logo-badge">
+                <Calendar className="h-5 w-5" />
+              </div>
+              <span className="logo-text">CampusSync</span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center gap-2">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 $${
-                  isActive(link.path)
-                    ? 'text-blue-600 bg-blue-50'
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                }`}
+                className={
+                  'nav-pill ' +
+                  (isActive(link.path)
+                    ? 'nav-pill-active'
+                    : 'nav-pill-idle')
+                }
               >
                 {link.name}
               </Link>
@@ -64,30 +74,34 @@ const Navbar = () => {
           </div>
 
           {/* User Menu / Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center gap-4">
             {isAuthenticated ? (
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-50 transition-colors duration-200"
+                  className="user-chip"
                 >
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <span className="text-white font-medium text-sm">
-                      {user.name.charAt(0).toUpperCase()}
+                  <div className="user-avatar">
+                    <span className="text-xs font-semibold">
+                      {user?.name?.charAt(0)?.toUpperCase()}
                     </span>
                   </div>
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                    <p className="text-xs text-gray-500 capitalize">{user.role}</p>
+                  <div className="text-left leading-tight">
+                    <p className="text-sm font-medium text-slate-100">
+                      {user.name}
+                    </p>
+                    <p className="text-[11px] text-slate-400 capitalize">
+                      {user.role}
+                    </p>
                   </div>
                 </button>
 
                 {/* User Dropdown */}
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                  <div className="user-dropdown">
                     <Link
                       to={getDashboardPath()}
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="user-dropdown-item"
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <LayoutDashboard className="mr-2 h-4 w-4" />
@@ -95,7 +109,7 @@ const Navbar = () => {
                     </Link>
                     <Link
                       to="/profile"
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="user-dropdown-item"
                       onClick={() => setUserMenuOpen(false)}
                     >
                       <User className="mr-2 h-4 w-4" />
@@ -103,7 +117,7 @@ const Navbar = () => {
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="user-dropdown-item text-red-300 hover:text-red-200"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
                       Sign Out
@@ -112,16 +126,16 @@ const Navbar = () => {
                 )}
               </div>
             ) : (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center gap-3">
                 <Link
                   to="/login"
-                  className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                  className="nav-link-ghost"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/register"
-                  className="btn btn-primary"
+                  className="btn-nav-primary"
                 >
                   Get Started
                 </Link>
@@ -133,12 +147,12 @@ const Navbar = () => {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+              className="mobile-menu-toggle"
             >
               {isOpen ? (
-                <X className="block h-6 w-6" />
+                <X className="h-5 w-5" />
               ) : (
-                <Menu className="block h-6 w-6" />
+                <Menu className="h-5 w-5" />
               )}
             </button>
           </div>
@@ -146,17 +160,18 @@ const Navbar = () => {
 
         {/* Mobile Navigation Menu */}
         {isOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+          <div className="md:hidden mt-2 space-y-2 pb-3">
+            <div className="rounded-2xl bg-slate-900/70 border border-white/5 backdrop-blur-xl px-3 py-2 space-y-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`block px-3 py-2 rounded-md text-base font-medium $${
-                    isActive(link.path)
-                      ? 'text-blue-600 bg-blue-50'
-                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                  }`}
+                  className={
+                    'block rounded-xl px-3 py-2 text-sm font-medium ' +
+                    (isActive(link.path)
+                      ? 'bg-sky-500/20 text-sky-200'
+                      : 'text-slate-200 hover:bg-slate-800/70')
+                  }
                   onClick={() => setIsOpen(false)}
                 >
                   {link.name}
@@ -165,51 +180,55 @@ const Navbar = () => {
             </div>
 
             {/* Mobile User Menu */}
-            <div className="pt-4 pb-3 border-t border-gray-200">
+            <div className="rounded-2xl bg-slate-900/70 border border-white/5 backdrop-blur-xl px-3 py-3 space-y-2">
               {isAuthenticated ? (
-                <div className="px-2 space-y-1">
-                  <div className="flex items-center px-3 py-2">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-medium">
+                <>
+                  <div className="flex items-center px-2 pb-2 border-b border-white/5 mb-1">
+                    <div className="user-avatar mr-3">
+                      <span className="text-xs font-semibold">
                         {user.name.charAt(0).toUpperCase()}
                       </span>
                     </div>
-                    <div className="ml-3">
-                      <p className="text-base font-medium text-gray-800">{user.name}</p>
-                      <p className="text-sm font-medium text-gray-500 capitalize">{user.role}</p>
+                    <div className="leading-tight">
+                      <p className="text-sm font-medium text-slate-100">
+                        {user.name}
+                      </p>
+                      <p className="text-[11px] text-slate-400 capitalize">
+                        {user.role}
+                      </p>
                     </div>
                   </div>
                   <Link
                     to="/profile"
-                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    className="block rounded-xl px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800/70"
                     onClick={() => setIsOpen(false)}
                   >
                     Profile
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    className="block w-full text-left rounded-xl px-3 py-2 text-sm font-medium text-red-300 hover:bg-red-500/10"
                   >
                     Sign Out
                   </button>
-                </div>
+                </>
               ) : (
-                <div className="px-2 space-y-1">
+                <>
                   <Link
                     to="/login"
-                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    className="block rounded-xl px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800/70"
                     onClick={() => setIsOpen(false)}
                   >
                     Sign In
                   </Link>
                   <Link
                     to="/register"
-                    className="block px-3 py-2 rounded-md text-base font-medium text-white bg-blue-600 hover:bg-blue-700"
+                    className="block rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 bg-sky-400 hover:bg-sky-300"
                     onClick={() => setIsOpen(false)}
                   >
                     Get Started
                   </Link>
-                </div>
+                </>
               )}
             </div>
           </div>

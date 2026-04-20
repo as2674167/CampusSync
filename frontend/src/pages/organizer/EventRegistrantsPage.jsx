@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { eventsAPI, registrationsAPI, downloadFile } from '../../services/api'
+import { eventsAPI, registrationsAPI } from '../../services/api'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import { formatDate, formatTime } from '../../utils/helpers'
 import toast from 'react-hot-toast'
@@ -21,11 +21,11 @@ import {
 } from 'lucide-react'
 
 const statusPill = {
-  registered: 'bg-green-100 text-green-700',
-  waitlisted: 'bg-yellow-100 text-yellow-700',
-  cancelled: 'bg-red-100 text-red-700',
-  attended: 'bg-blue-100 text-blue-700',
-  'no-show': 'bg-gray-100 text-gray-700',
+  registered: 'bg-emerald-50 text-emerald-700',
+  waitlisted: 'bg-amber-50 text-amber-700',
+  cancelled: 'bg-rose-50 text-rose-700',
+  attended: 'bg-blue-50 text-blue-700',
+  'no-show': 'bg-slate-100 text-slate-700'
 }
 
 const EventRegistrantsPage = () => {
@@ -50,7 +50,7 @@ const EventRegistrantsPage = () => {
 
       const [eventRes, registrationRes] = await Promise.all([
         eventsAPI.getEvent(id),
-        eventsAPI.getEventRegistrations(id),
+        eventsAPI.getEventRegistrations(id)
       ])
 
       setEvent(eventRes.data.event)
@@ -58,7 +58,9 @@ const EventRegistrantsPage = () => {
       setStats(registrationRes.data.stats || {})
     } catch (error) {
       console.error('Error fetching registrants:', error)
-      toast.error(error.response?.data?.message || 'Failed to load registrants')
+      toast.error(
+        error.response?.data?.message || 'Failed to load registrants'
+      )
     } finally {
       setLoading(false)
     }
@@ -67,11 +69,13 @@ const EventRegistrantsPage = () => {
   const filteredRegistrations = useMemo(() => {
     return registrations.filter((reg) => {
       const user = reg.user || {}
+      const term = searchTerm.toLowerCase()
+
       const matchesSearch =
-        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.studentId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.department?.toLowerCase().includes(searchTerm.toLowerCase())
+        user.name?.toLowerCase().includes(term) ||
+        user.email?.toLowerCase().includes(term) ||
+        user.studentId?.toLowerCase().includes(term) ||
+        user.department?.toLowerCase().includes(term)
 
       const matchesStatus =
         statusFilter === 'all' ? true : reg.status === statusFilter
@@ -115,7 +119,7 @@ const EventRegistrantsPage = () => {
               return `"${safeValue}"`
             })
             .join(',')
-        ),
+        )
       ].join('\n')
 
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
@@ -136,7 +140,7 @@ const EventRegistrantsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.18),_transparent_40%),radial-gradient(circle_at_bottom_right,_rgba(129,140,248,0.16),_transparent_35%),linear-gradient(to_bottom,_#f5f7ff,_#edf2ff,_#f8fafc)]">
         <LoadingSpinner size="large" text="Loading registrants..." />
       </div>
     )
@@ -144,46 +148,59 @@ const EventRegistrantsPage = () => {
 
   if (!event) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600">Event not found</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <p className="text-slate-600">Event not found</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.18),_transparent_40%),radial-gradient(circle_at_bottom_right,_rgba(129,140,248,0.16),_transparent_35%),linear-gradient(to_bottom,_#f5f7ff,_#edf2ff,_#f8fafc)] py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Back link */}
         <div className="mb-6">
           <Link
             to="/organizer/manage-events"
-            className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
+            className="inline-flex items-center text-sm font-semibold text-blue-600 transition-colors duration-200 hover:text-slate-900"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Manage Events
           </Link>
         </div>
 
-        <div className="card p-6 mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+        {/* Event header card */}
+        <div className="mb-8 overflow-hidden rounded-[26px] border border-white/80 bg-white/95 p-6 shadow-[0_22px_70px_rgba(15,23,42,0.14)] backdrop-blur">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">{event.title}</h1>
-              <p className="text-gray-600 mt-2 max-w-3xl">{event.description}</p>
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
+                {event.title}
+              </h1>
+              {event.description && (
+                <p className="mt-2 max-w-3xl text-sm md:text-base text-slate-600">
+                  {event.description}
+                </p>
+              )}
 
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-                <div className="flex items-center text-sm text-gray-600">
-                  <Calendar className="h-4 w-4 mr-2 text-blue-500" />
-                  {formatDate(event.date)} at {formatTime(event.time)}
+              <div className="mt-5 grid gap-3 text-sm text-slate-600 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="flex items-center">
+                  <Calendar className="mr-2 h-4 w-4 text-blue-500" />
+                  <span>
+                    {formatDate(event.date)} at {formatTime(event.time)}
+                  </span>
                 </div>
-                <div className="flex items-center text-sm text-gray-600">
-                  <MapPin className="h-4 w-4 mr-2 text-blue-500" />
-                  {event.venue}
+                <div className="flex items-center">
+                  <MapPin className="mr-2 h-4 w-4 text-pink-500" />
+                  <span>{event.venue}</span>
                 </div>
-                <div className="flex items-center text-sm text-gray-600">
-                  <Users className="h-4 w-4 mr-2 text-blue-500" />
-                  {stats.total || 0} total responses
+                <div className="flex items-center">
+                  <Users className="mr-2 h-4 w-4 text-violet-500" />
+                  <span>{stats.total || 0} total responses</span>
                 </div>
-                <div className="text-sm text-gray-600">
-                  <span className="font-medium">Capacity:</span> {event.capacity}
+                <div className="flex items-center">
+                  <span className="mr-1 font-medium text-slate-700">
+                    Capacity:
+                  </span>
+                  <span>{event.capacity}</span>
                 </div>
               </div>
             </div>
@@ -191,150 +208,223 @@ const EventRegistrantsPage = () => {
             <button
               onClick={handleExport}
               disabled={exporting}
-              className="btn btn-primary inline-flex items-center justify-center"
+              className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(79,70,229,0.45)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(79,70,229,0.55)] disabled:cursor-not-allowed disabled:opacity-70"
             >
-              <Download className="h-4 w-4 mr-2" />
+              <Download className="mr-2 h-4 w-4" />
               {exporting ? 'Exporting...' : 'Export CSV'}
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="card p-5">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Users className="h-6 w-6 text-blue-600" />
+        {/* Stat tiles */}
+        <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-4">
+          {/* Total */}
+          <div className="group relative overflow-hidden rounded-[20px] border border-slate-100 bg-white/95 p-4 shadow-[0_14px_40px_rgba(15,23,42,0.08)] backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:border-blue-200 hover:shadow-[0_24px_70px_rgba(59,130,246,0.20)]">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 shadow-[0_8px_20px_rgba(59,130,246,0.30)] transition-transform duration-300 group-hover:scale-110">
+                <Users className="h-5 w-5" />
               </div>
-              <div className="ml-4">
-                <p className="text-2xl font-bold text-gray-900">{stats.total || 0}</p>
-                <p className="text-gray-600 text-sm">Total</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="card p-5">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <CheckCircle className="h-6 w-6 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-2xl font-bold text-gray-900">{stats.registered || 0}</p>
-                <p className="text-gray-600 text-sm">Registered</p>
+              <div>
+                <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500">
+                  Total
+                </p>
+                <p className="text-2xl font-semibold tracking-tight text-slate-900">
+                  {stats.total || 0}
+                </p>
               </div>
             </div>
           </div>
 
-          <div className="card p-5">
-            <div className="flex items-center">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <Clock className="h-6 w-6 text-yellow-600" />
+          {/* Registered */}
+          <div className="group relative overflow-hidden rounded-[20px] border border-slate-100 bg-white/95 p-4 shadow-[0_14px_40px_rgba(15,23,42,0.08)] backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-200 hover:shadow-[0_24px_70px_rgba(16,185,129,0.20)]">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 shadow-[0_8px_20px_rgba(16,185,129,0.30)] transition-transform duration-300 group-hover:scale-110">
+                <CheckCircle className="h-5 w-5" />
               </div>
-              <div className="ml-4">
-                <p className="text-2xl font-bold text-gray-900">{stats.waitlisted || 0}</p>
-                <p className="text-gray-600 text-sm">Waitlisted</p>
+              <div>
+                <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500">
+                  Registered
+                </p>
+                <p className="text-2xl font-semibold tracking-tight text-slate-900">
+                  {stats.registered || 0}
+                </p>
               </div>
             </div>
           </div>
 
-          <div className="card p-5">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <UserCheck className="h-6 w-6 text-purple-600" />
+          {/* Waitlisted */}
+          <div className="group relative overflow-hidden rounded-[20px] border border-slate-100 bg-white/95 p-4 shadow-[0_14px_40px_rgba(15,23,42,0.08)] backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:border-amber-200 hover:shadow-[0_24px_70px_rgba(245,158,11,0.20)]">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 shadow-[0_8px_20px_rgba(245,158,11,0.30)] transition-transform duration-300 group-hover:scale-110">
+                <Clock className="h-5 w-5" />
               </div>
-              <div className="ml-4">
-                <p className="text-2xl font-bold text-gray-900">{stats.attended || 0}</p>
-                <p className="text-gray-600 text-sm">Attended</p>
+              <div>
+                <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500">
+                  Waitlisted
+                </p>
+                <p className="text-2xl font-semibold tracking-tight text-slate-900">
+                  {stats.waitlisted || 0}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Attended */}
+          <div className="group relative overflow-hidden rounded-[20px] border border-slate-100 bg-white/95 p-4 shadow-[0_14px_40px_rgba(15,23,42,0.08)] backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:border-violet-200 hover:shadow-[0_24px_70px_rgba(129,140,248,0.22)]">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-violet-50 text-violet-600 shadow-[0_8px_20px_rgba(129,140,248,0.30)] transition-transform duration-300 group-hover:scale-110">
+                <UserCheck className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500">
+                  Attended
+                </p>
+                <p className="text-2xl font-semibold tracking-tight text-slate-900">
+                  {stats.attended || 0}
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="card mb-6 p-4">
-          <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+               {/* Search + filter bar */}
+        <div className="mb-6 overflow-hidden rounded-[20px] border border-slate-100 bg-white/95 p-4 shadow-[0_18px_55px_rgba(15,23,42,0.10)] backdrop-blur">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            {/* Search pill */}
             <div className="relative w-full md:max-w-md">
-              <Search className="h-4 w-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
               <input
                 type="text"
                 placeholder="Search by name, email, student ID, department..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-full border border-slate-800/70 bg-slate-900/95 pl-11 pr-4 py-2.5 text-sm text-slate-50 shadow-[0_14px_40px_rgba(15,23,42,0.70)] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-slate-900"
               />
             </div>
 
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">All Statuses</option>
-              <option value="registered">Registered</option>
-              <option value="waitlisted">Waitlisted</option>
-              <option value="cancelled">Cancelled</option>
-              <option value="attended">Attended</option>
-              <option value="no-show">No-show</option>
-            </select>
+            {/* Status dropdown pill */}
+            <div className="w-full md:w-auto">
+              <div className="relative inline-flex w-full md:w-auto items-center">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full md:w-auto appearance-none rounded-full border border-slate-900/80 bg-slate-900/95 px-4 pr-9 py-2.5 text-sm font-medium text-slate-50 shadow-[0_14px_40px_rgba(15,23,42,0.70)] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-slate-50"
+                >
+                  <option value="all">All Statuses</option>
+                  <option value="registered">Registered</option>
+                  <option value="waitlisted">Waitlisted</option>
+                  <option value="cancelled">Cancelled</option>
+                  <option value="attended">Attended</option>
+                  <option value="no-show">No-show</option>
+                </select>
+
+                {/* custom arrow so select still rounded */}
+                <span className="pointer-events-none absolute right-4 inline-flex h-4 w-4 items-center justify-center text-slate-300">
+                  <svg
+                    className="h-4 w-4"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M6 8L10 12L14 8"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="card overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">Participants</h2>
-            <p className="text-sm text-gray-500">
+        {/* Participants table/card */}
+        <div className="overflow-hidden rounded-[26px] border border-slate-100 bg-white/95 shadow-[0_22px_70px_rgba(15,23,42,0.14)] backdrop-blur">
+          <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+            <h2 className="text-lg md:text-xl font-semibold tracking-tight text-slate-900">
+              Participants
+            </h2>
+            <p className="text-xs md:text-sm text-slate-500">
               Showing {filteredRegistrations.length} of {registrations.length}
             </p>
           </div>
 
           {filteredRegistrations.length === 0 ? (
-            <div className="p-10 text-center">
-              <Users className="mx-auto h-12 w-12 text-gray-300 mb-3" />
-              <h3 className="text-lg font-medium text-gray-900">No participants found</h3>
-              <p className="text-gray-600 mt-1">
+            <div className="px-6 py-10 text-center">
+              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100">
+                <Users className="h-7 w-7 text-slate-400" />
+              </div>
+              <h3 className="text-base md:text-lg font-medium text-slate-900">
+                No participants found
+              </h3>
+              <p className="mt-1 text-xs md:text-sm text-slate-600">
                 Try changing the search text or status filter.
               </p>
             </div>
           ) : (
             <>
+              {/* Desktop table */}
               <div className="hidden lg:block overflow-x-auto">
-                <table className="min-w-full">
-                  <thead className="bg-gray-50">
-                    <tr className="text-left text-sm text-gray-600">
-                      <th className="px-6 py-4 font-semibold">Participant</th>
-                      <th className="px-6 py-4 font-semibold">Academic Info</th>
-                      <th className="px-6 py-4 font-semibold">Contact</th>
-                      <th className="px-6 py-4 font-semibold">Status</th>
-                      <th className="px-6 py-4 font-semibold">Registered On</th>
-                      <th className="px-6 py-4 font-semibold">Action</th>
+                <table className="min-w-full text-sm">
+                  <thead className="bg-slate-50/80">
+                    <tr className="text-left text-slate-600">
+                      <th className="px-6 py-3 font-semibold">Participant</th>
+                      <th className="px-6 py-3 font-semibold">Academic Info</th>
+                      <th className="px-6 py-3 font-semibold">Contact</th>
+                      <th className="px-6 py-3 font-semibold">Status</th>
+                      <th className="px-6 py-3 font-semibold">
+                        Registered On
+                      </th>
+                      <th className="px-6 py-3 font-semibold">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody className="divide-y divide-slate-100">
                     {filteredRegistrations.map((reg) => (
-                      <tr key={reg._id} className="hover:bg-gray-50">
+                      <tr
+                        key={reg._id}
+                        className="transition-colors duration-200 hover:bg-slate-50"
+                      >
                         <td className="px-6 py-4">
                           <div>
-                            <p className="font-semibold text-gray-900">{reg.user?.name || 'N/A'}</p>
-                            <p className="text-sm text-gray-500">{reg.user?.email || 'N/A'}</p>
+                            <p className="font-semibold text-slate-900">
+                              {reg.user?.name || 'N/A'}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {reg.user?.email || 'N/A'}
+                            </p>
                           </div>
                         </td>
 
                         <td className="px-6 py-4">
-                          <p className="text-sm text-gray-800">
-                            <span className="font-medium">Student ID:</span> {reg.user?.studentId || 'N/A'}
+                          <p className="text-xs text-slate-800">
+                            <span className="font-medium">Student ID:</span>{' '}
+                            {reg.user?.studentId || 'N/A'}
                           </p>
-                          <p className="text-sm text-gray-500">{reg.user?.department || 'N/A'}</p>
+                          <p className="text-xs text-slate-500">
+                            {reg.user?.department || 'N/A'}
+                          </p>
                         </td>
 
                         <td className="px-6 py-4">
-                          <p className="text-sm text-gray-800">{reg.user?.phone || 'N/A'}</p>
+                          <p className="text-xs text-slate-800">
+                            {reg.user?.phone || 'N/A'}
+                          </p>
                         </td>
 
                         <td className="px-6 py-4">
-                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusPill[reg.status] || 'bg-gray-100 text-gray-700'}`}>
+                          <span
+                            className={`inline-flex rounded-full px-3 py-1 text-[11px] font-semibold capitalize ${
+                              statusPill[reg.status] ||
+                              'bg-slate-100 text-slate-700'
+                            }`}
+                          >
                             {reg.status}
                           </span>
                         </td>
 
-                        <td className="px-6 py-4 text-sm text-gray-600">
+                        <td className="px-6 py-4 text-xs text-slate-600">
                           {new Date(reg.registrationDate).toLocaleString()}
                         </td>
 
@@ -343,14 +433,18 @@ const EventRegistrantsPage = () => {
                             <button
                               onClick={() => handleCheckIn(reg._id)}
                               disabled={checkInLoading === reg._id}
-                              className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium disabled:opacity-60"
+                              className="rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-all duration-200 hover:bg-emerald-700 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
                             >
-                              {checkInLoading === reg._id ? 'Checking in...' : 'Check in'}
+                              {checkInLoading === reg._id
+                                ? 'Checking in...'
+                                : 'Check in'}
                             </button>
                           ) : reg.status === 'attended' ? (
-                            <span className="text-sm font-medium text-green-600">Checked in</span>
+                            <span className="text-xs font-semibold text-emerald-600">
+                              Checked in
+                            </span>
                           ) : (
-                            <span className="text-sm text-gray-500">—</span>
+                            <span className="text-xs text-slate-400">—</span>
                           )}
                         </td>
                       </tr>
@@ -359,40 +453,51 @@ const EventRegistrantsPage = () => {
                 </table>
               </div>
 
-              <div className="lg:hidden divide-y divide-gray-100">
+              {/* Mobile cards */}
+              <div className="lg:hidden divide-y divide-slate-100">
                 {filteredRegistrations.map((reg) => (
-                  <div key={reg._id} className="p-5">
+                  <div key={reg._id} className="px-5 py-4">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="font-semibold text-gray-900">{reg.user?.name || 'N/A'}</h3>
-                        <p className="text-sm text-gray-500 mt-1">{reg.user?.email || 'N/A'}</p>
+                        <h3 className="text-sm font-semibold text-slate-900">
+                          {reg.user?.name || 'N/A'}
+                        </h3>
+                        <p className="mt-1 text-xs text-slate-500">
+                          {reg.user?.email || 'N/A'}
+                        </p>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusPill[reg.status] || 'bg-gray-100 text-gray-700'}`}>
+                      <span
+                        className={`inline-flex rounded-full px-3 py-1 text-[11px] font-semibold capitalize ${
+                          statusPill[reg.status] ||
+                          'bg-slate-100 text-slate-700'
+                        }`}
+                      >
                         {reg.status}
                       </span>
                     </div>
 
-                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                      <div className="flex items-center text-gray-700">
-                        <GraduationCap className="h-4 w-4 mr-2 text-gray-400" />
+                    <div className="mt-4 grid grid-cols-1 gap-2 text-xs text-slate-700 sm:grid-cols-2">
+                      <div className="flex items-center">
+                        <GraduationCap className="mr-2 h-4 w-4 text-slate-400" />
                         {reg.user?.studentId || 'N/A'}
                       </div>
-                      <div className="flex items-center text-gray-700">
-                        <Users className="h-4 w-4 mr-2 text-gray-400" />
+                      <div className="flex items-center">
+                        <Users className="mr-2 h-4 w-4 text-slate-400" />
                         {reg.user?.department || 'N/A'}
                       </div>
-                      <div className="flex items-center text-gray-700">
-                        <Mail className="h-4 w-4 mr-2 text-gray-400" />
+                      <div className="flex items-center">
+                        <Mail className="mr-2 h-4 w-4 text-slate-400" />
                         {reg.user?.email || 'N/A'}
                       </div>
-                      <div className="flex items-center text-gray-700">
-                        <Phone className="h-4 w-4 mr-2 text-gray-400" />
+                      <div className="flex items-center">
+                        <Phone className="mr-2 h-4 w-4 text-slate-400" />
                         {reg.user?.phone || 'N/A'}
                       </div>
                     </div>
 
-                    <p className="text-xs text-gray-500 mt-4">
-                      Registered on {new Date(reg.registrationDate).toLocaleString()}
+                    <p className="mt-3 text-[11px] text-slate-500">
+                      Registered on{' '}
+                      {new Date(reg.registrationDate).toLocaleString()}
                     </p>
 
                     <div className="mt-4">
@@ -400,12 +505,16 @@ const EventRegistrantsPage = () => {
                         <button
                           onClick={() => handleCheckIn(reg._id)}
                           disabled={checkInLoading === reg._id}
-                          className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium disabled:opacity-60"
+                          className="w-full rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition-all duration-200 hover:bg-emerald-700 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                          {checkInLoading === reg._id ? 'Checking in...' : 'Check in participant'}
+                          {checkInLoading === reg._id
+                            ? 'Checking in...'
+                            : 'Check in participant'}
                         </button>
                       ) : reg.status === 'attended' ? (
-                        <div className="text-sm font-medium text-green-600">Already checked in</div>
+                        <div className="text-xs font-semibold text-emerald-600">
+                          Already checked in
+                        </div>
                       ) : null}
                     </div>
                   </div>

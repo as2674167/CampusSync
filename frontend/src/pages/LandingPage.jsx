@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { 
-  Calendar, 
-  Users, 
-  Star, 
-  ArrowRight, 
+import {
+  Calendar,
+  Users,
+  Star,
+  ArrowRight,
   CheckCircle,
   Zap,
   Shield,
@@ -14,7 +14,7 @@ import {
 
 const LandingPage = () => {
   const { isAuthenticated } = useAuth()
-  const [stats, setStats] = useState({
+  const [stats] = useState({
     totalEvents: 150,
     totalStudents: 2500,
     completedEvents: 120,
@@ -25,22 +25,26 @@ const LandingPage = () => {
     {
       icon: Calendar,
       title: 'Event Management',
-      description: 'Create, manage, and organize college events with ease. From workshops to cultural festivals.'
+      description:
+        'Create, manage, and organize college events without juggling spreadsheets and scattered approvals.'
     },
     {
       icon: Users,
       title: 'Community Engagement',
-      description: 'Connect students, faculty, and organizers in one unified platform for better collaboration.'
+      description:
+        'Bring students, faculty, clubs, and organizers into one platform with better visibility and coordination.'
     },
     {
       icon: Zap,
       title: 'Real-time Updates',
-      description: 'Get instant notifications about event approvals, registrations, and important updates.'
+      description:
+        'Keep everyone informed with instant notifications for approvals, registrations, and schedule changes.'
     },
     {
       icon: Shield,
       title: 'Secure & Reliable',
-      description: 'Built with security in mind. Your data is protected with enterprise-grade security measures.'
+      description:
+        'Protect workflows and user data with a system built for trust, control, and consistency.'
     }
   ]
 
@@ -48,148 +52,188 @@ const LandingPage = () => {
     {
       name: 'Sarah Johnson',
       role: 'Student Council President',
-      content: 'EventHub has revolutionized how we organize campus events. The streamlined process saves us hours of work.',
+      content:
+        'CampusSync made our event planning smoother. Registrations, approvals, and promotion all live in one place.',
       avatar: 'SJ'
     },
     {
       name: 'Dr. Michael Chen',
       role: 'Faculty Coordinator',
-      content: 'The approval system is fantastic. I can review and approve events quickly while maintaining quality control.',
+      content:
+        'The approval flow is simple and transparent. I can review requests quickly without losing control.',
       avatar: 'MC'
     },
     {
       name: 'Alex Rivera',
       role: 'Event Organizer',
-      content: 'Managing registrations has never been easier. The analytics help me understand attendance patterns.',
+      content:
+        'Managing registrations and understanding attendance patterns has never been this easy.',
       avatar: 'AR'
     }
   ]
 
-  useEffect(() => {
-    // Animate counters
-    const animateValue = (obj, start, end, duration) => {
-      let startTimestamp = null
-      const step = (timestamp) => {
-        if (!startTimestamp) startTimestamp = timestamp
-        const progress = Math.min((timestamp - startTimestamp) / duration, 1)
-        obj.innerHTML = Math.floor(progress * (end - start) + start)
-        if (progress < 1) {
-          window.requestAnimationFrame(step)
-        }
-      }
-      window.requestAnimationFrame(step)
-    }
-
-    // This would be used with actual DOM elements in a real implementation
-  }, [])
-
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-page">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 text-white">
-        <div className="absolute inset-0 bg-black opacity-20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
-          <div className="text-center">
-            <h1 className="text-4xl lg:text-6xl font-bold mb-6 animate-fadeInUp">
-              Streamline Your
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
-                College Events
-              </span>
-            </h1>
-            <p className="text-xl lg:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
-              A comprehensive event management platform designed for colleges and universities. 
-              Organize, manage, and participate in campus events effortlessly.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fadeInUp" style={{ animationDelay: '0.4s' }}>
-              {isAuthenticated ? (
-                <Link
-                  to="/dashboard"
-                  className="btn btn-primary text-lg px-8 py-4"
-                >
-                  Go to Dashboard
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    to="/register"
-                    className="btn btn-primary text-lg px-8 py-4"
-                  >
-                    Get Started
-                    <ArrowRight className="ml-2 h-5 w-5" />
+      <section className="relative overflow-hidden hero-section">
+        <div className="hero-glow hero-glow-one" />
+        <div className="hero-glow hero-glow-two" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 lg:pt-24 lg:pb-28">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left: text */}
+            <div className="space-y-6 animate-fadeInUp">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-400/30 text-xs font-medium text-sky-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Campus event operating system
+              </div>
+
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-50">
+                Make campus events
+                <span className="block bg-gradient-to-r from-sky-300 via-cyan-200 to-violet-300 bg-clip-text text-transparent">
+                  feel organized and alive
+                </span>
+              </h1>
+
+              <p className="text-lg lg:text-xl text-slate-300 max-w-xl">
+                CampusSync helps colleges manage approvals, registrations, communication, and participation in one beautiful, coordinated experience.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                {isAuthenticated ? (
+                  <Link to="/dashboard" className="btn-hero-primary">
+                    Go to Dashboard
+                    <ArrowRight className="h-5 w-5" />
                   </Link>
-                  <Link
-                    to="/events"
-                    className="btn btn-outline text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-blue-900"
-                  >
-                    Browse Events
-                  </Link>
-                </>
-              )}
+                ) : (
+                  <>
+                    <Link to="/register" className="btn-hero-primary">
+                      Get Started
+                      <ArrowRight className="h-5 w-5" />
+                    </Link>
+                    <Link to="/events" className="btn-hero-secondary">
+                      Browse Events
+                    </Link>
+                  </>
+                )}
+              </div>
+
+              <div className="flex flex-wrap gap-4 text-xs text-slate-300 pt-4">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-emerald-400" />
+                  <span>Role-based access</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-emerald-400" />
+                  <span>Faster approvals</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-emerald-400" />
+                  <span>Better participation tracking</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: stats / mini dashboard style card */}
+            <div className="relative animate-fadeInUp" style={{ animationDelay: '0.15s' }}>
+              <div className="hero-card glass-strong p-5 sm:p-6 lg:p-7">
+                <div className="flex items-center justify-between pb-4 border-b border-white/5 mb-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.25em] text-slate-400">
+                      Live overview
+                    </p>
+                    <p className="mt-1 text-sm text-slate-200">
+                      A snapshot of your campus events
+                    </p>
+                  </div>
+                  <div className="hero-mini-logo">
+                    <Globe className="h-5 w-5" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="glass-soft p-4 rounded-2xl">
+                    <p className="metric-value">{stats.totalEvents}+</p>
+                    <p className="metric-label">Events created</p>
+                  </div>
+                  <div className="glass-soft p-4 rounded-2xl">
+                    <p className="metric-value">
+                      {stats.totalStudents.toLocaleString()}+
+                    </p>
+                    <p className="metric-label">Active students</p>
+                  </div>
+                  <div className="glass-soft p-4 rounded-2xl">
+                    <p className="metric-value">{stats.completedEvents}+</p>
+                    <p className="metric-label">Completed events</p>
+                  </div>
+                  <div className="glass-soft p-4 rounded-2xl">
+                    <p className="metric-value">{stats.upcomingEvents}+</p>
+                    <p className="metric-label">Upcoming programs</p>
+                  </div>
+                </div>
+
+                <div className="mt-5 rounded-2xl border border-sky-400/20 bg-gradient-to-r from-sky-500/10 via-cyan-500/5 to-violet-500/10 px-5 py-4 flex items-center gap-4">
+                  <div className="flex-1">
+                    <p className="text-xs uppercase tracking-[0.2em] text-sky-300 mb-1">
+                      Campus workflow
+                    </p>
+                    <p className="text-sm text-slate-100">
+                      From idea to approval to attendance – in one coordinated system.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Decorative Elements */}
-        <div className="absolute top-20 left-10 w-20 h-20 bg-blue-400 rounded-full opacity-10 animate-bounce-slow"></div>
-        <div className="absolute bottom-20 right-10 w-16 h-16 bg-purple-400 rounded-full opacity-10 animate-pulse-slow"></div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-surface-soft">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-3xl lg:text-4xl font-bold text-blue-600 mb-2">
-                {stats.totalEvents}+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+            {[
+              { label: 'Total Events', value: `${stats.totalEvents}+` },
+              { label: 'Active Students', value: `${stats.totalStudents.toLocaleString()}+` },
+              { label: 'Completed Events', value: `${stats.completedEvents}+` },
+              { label: 'Upcoming Events', value: `${stats.upcomingEvents}+` }
+            ].map((item, idx) => (
+              <div key={idx} className="glass-soft p-5 rounded-2xl text-left">
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-400 mb-1">
+                  {item.label}
+                </p>
+                <p className="text-2xl lg:text-3xl font-semibold text-slate-50">
+                  {item.value}
+                </p>
               </div>
-              <div className="text-gray-600">Total Events</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl lg:text-4xl font-bold text-green-600 mb-2">
-                {stats.totalStudents.toLocaleString()}+
-              </div>
-              <div className="text-gray-600">Active Students</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl lg:text-4xl font-bold text-purple-600 mb-2">
-                {stats.completedEvents}+
-              </div>
-              <div className="text-gray-600">Completed Events</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl lg:text-4xl font-bold text-orange-600 mb-2">
-                {stats.upcomingEvents}+
-              </div>
-              <div className="text-gray-600">Upcoming Events</div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-surface-deep">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose EventHub?
+          <div className="max-w-3xl mb-12">
+            <span className="badge-soft">Why CampusSync</span>
+            <h2 className="section-title mt-4">
+              Built for modern campus operations
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Built specifically for educational institutions, our platform offers 
-              everything you need to manage campus events successfully.
+            <p className="section-subtitle">
+              Instead of a generic portal, give your institution an organized way to plan, approve, and host events with complete visibility.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
             {features.map((feature, index) => (
-              <div key={index} className="card p-6 text-center animate-fadeInUp" style={{ animationDelay: `${index * 0.1}s` }}>
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <feature.icon className="h-8 w-8 text-white" />
+              <div key={index} className="glass-card p-6 flex flex-col h-full">
+                <div className="feature-icon">
+                  <feature.icon className="h-6 w-6" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                <h3 className="text-lg font-semibold text-slate-50 mt-4 mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-sm text-slate-300 flex-1">
                   {feature.description}
                 </p>
               </div>
@@ -199,93 +243,88 @@ const LandingPage = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-surface-soft">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              How It Works
+          <div className="max-w-3xl mb-12">
+            <span className="badge-soft">How it works</span>
+            <h2 className="section-title mt-4">
+              Simple flow, better coordination
             </h2>
-            <p className="text-xl text-gray-600">
-              Simple steps to get started with event management
+            <p className="section-subtitle">
+              Keep the process clear for students, organizers, and faculty from the first click to the last feedback.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-12">
-            <div className="text-center">
-              <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-blue-600">1</span>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                step: 1,
+                title: 'Sign up & choose your role',
+                description:
+                  'Students, organizers, and admins get dedicated spaces and tools tailored to their responsibilities.'
+              },
+              {
+                step: 2,
+                title: 'Create or discover events',
+                description:
+                  'Organizers publish events while students browse experiences that match their interests.'
+              },
+              {
+                step: 3,
+                title: 'Register, join, and track',
+                description:
+                  'Participants register quickly, receive updates, and organizers track what works best.'
+              }
+            ].map((item) => (
+              <div key={item.step} className="glass-card p-7 flex flex-col gap-3">
+                <div className="step-circle">
+                  <span>{item.step}</span>
+                </div>
+                <h3 className="text-lg font-semibold text-slate-50">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-slate-300">
+                  {item.description}
+                </p>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Sign Up & Choose Role
-              </h3>
-              <p className="text-gray-600">
-                Register as a student, organizer, or admin to access role-specific features
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-green-600">2</span>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Create or Browse Events
-              </h3>
-              <p className="text-gray-600">
-                Organizers can create events, while students can browse and discover interesting activities
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-purple-600">3</span>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Register & Participate
-              </h3>
-              <p className="text-gray-600">
-                Easy registration process with real-time updates and event management tools
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-surface-deep">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              What Our Users Say
+          <div className="max-w-3xl mb-12">
+            <span className="badge-soft">What teams say</span>
+            <h2 className="section-title mt-4">
+              Trusted around the campus
             </h2>
-            <p className="text-xl text-gray-600">
-              Trusted by students, faculty, and administrators
+            <p className="section-subtitle">
+              Students, organizers, and faculty use CampusSync to keep their events visible, organized, and smooth.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((testimonial, index) => (
-              <div key={index} className="card p-6 animate-fadeInUp" style={{ animationDelay: `${index * 0.1}s` }}>
+              <div key={index} className="glass-card p-6 flex flex-col h-full">
                 <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <span className="text-white font-medium">
-                      {testimonial.avatar}
-                    </span>
+                  <div className="testimonial-avatar">
+                    <span>{testimonial.avatar}</span>
                   </div>
-                  <div className="ml-4">
-                    <h4 className="font-semibold text-gray-900">
+                  <div className="ml-3">
+                    <p className="text-sm font-semibold text-slate-50">
                       {testimonial.name}
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      {testimonial.role}
                     </p>
+                    <p className="text-xs text-slate-400">{testimonial.role}</p>
                   </div>
                 </div>
-                <p className="text-gray-700 italic">
-                  "{testimonial.content}"
+                <p className="text-sm text-slate-200 italic flex-1">
+                  “{testimonial.content}”
                 </p>
-                <div className="flex mt-4">
+                <div className="flex mt-4 gap-1 text-amber-400">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                    <Star key={i} className="h-4 w-4 fill-current" />
                   ))}
                 </div>
               </div>
@@ -295,28 +334,23 @@ const LandingPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-700">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-            Ready to Get Started?
+      <section className="py-20 bg-cta-gradient">
+        <div className="max-w-5xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <span className="badge-soft badge-soft-light">Start now</span>
+          <h2 className="mt-5 text-3xl lg:text-5xl font-bold tracking-tight text-slate-50">
+            Ready to launch better campus events?
           </h2>
-          <p className="text-xl text-blue-100 mb-8">
-            Join thousands of students and organizers who are already using EventHub 
-            to create amazing campus experiences.
+          <p className="mt-4 text-lg text-sky-100 max-w-2xl mx-auto">
+            Bring planning, approvals, registrations, and participation into one elegant platform designed for your college.
           </p>
+
           {!isAuthenticated && (
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/register"
-                className="btn btn-secondary text-lg px-8 py-4"
-              >
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/register" className="btn-cta-primary">
                 Get Started Free
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="h-5 w-5" />
               </Link>
-              <Link
-                to="/login"
-                className="btn btn-outline text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-blue-900"
-              >
+              <Link to="/login" className="btn-cta-secondary">
                 Sign In
               </Link>
             </div>

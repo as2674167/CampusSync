@@ -2,6 +2,7 @@ const express = require('express');
 const Registration = require('../models/Registration');
 const Event = require('../models/Event');
 const User = require('../models/User');
+const emailService = require('../utils/emailService');
 const { authenticate, authorize } = require('../middleware/auth');
 const { validateRegistration, validateObjectId, validatePagination } = require('../middleware/validation');
 
@@ -79,7 +80,7 @@ router.post('/events/:eventId', authenticate, authorize('student'), validateObje
         });
 
         await registration.save();
-
+        await emailService.sendRegistrationConfirmation(req.user, event);
         await registration.populate('event', 'title date time venue');
         await registration.populate('user', 'name email studentId');
 

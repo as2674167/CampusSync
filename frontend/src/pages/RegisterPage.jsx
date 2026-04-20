@@ -1,16 +1,16 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { 
-  Eye, 
-  EyeOff, 
-  Calendar, 
-  Mail, 
-  Lock, 
-  User, 
-  Phone, 
+import {
+  Eye,
+  EyeOff,
+  Calendar,
+  Mail,
+  Lock,
+  User,
+  Phone,
   Building,
-  CreditCard 
+  CreditCard
 } from 'lucide-react'
 import { ButtonSpinner } from '../components/common/LoadingSpinner'
 
@@ -56,7 +56,7 @@ const RegisterPage = () => {
       ...prev,
       [name]: value
     }))
-    // Clear error when user starts typing
+
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -101,7 +101,7 @@ const RegisterPage = () => {
     }
 
     if (formData.role === 'admin' && !formData.adminKey.trim()) {
-    newErrors.adminKey = 'Admin secret key is required'
+      newErrors.adminKey = 'Admin secret key is required'
     }
 
     if (!formData.department) {
@@ -126,6 +126,7 @@ const RegisterPage = () => {
     setIsLoading(true)
     try {
       const { confirmPassword, ...registrationData } = formData
+
       if (registrationData.role !== 'student' || !registrationData.studentId?.trim()) {
         delete registrationData.studentId
       }
@@ -135,6 +136,7 @@ const RegisterPage = () => {
       if (!registrationData.department?.trim()) {
         delete registrationData.department
       }
+
       const result = await register(registrationData)
       if (result.success) {
         navigate('/dashboard', { replace: true })
@@ -147,39 +149,38 @@ const RegisterPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-800 to-blue-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="register-page-shell min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-lg w-full space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <div className="flex justify-center">
-            <Calendar className="h-12 w-12 text-white" />
+        <div className="text-center register-header-block animate-fadeInUp">
+          <div className="flex justify-center mb-4">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 border border-white/25 shadow-[0_18px_45px_rgba(15,23,42,0.7)]">
+              <Calendar className="h-8 w-8 text-sky-200" />
+            </div>
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-white">
+          <h2 className="mt-4 text-3xl font-bold text-white tracking-tight">
             Join EventHub
           </h2>
-          <p className="mt-2 text-sm text-blue-100">
+          <p className="mt-2 text-sm text-sky-100">
             Create your account to get started
           </p>
         </div>
 
-        {/* Registration Form */}
-        <div className="bg-white rounded-xl shadow-2xl p-8">
+        <div className="register-card-main animate-fadeInUp">
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Name Field */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="name" className="block text-sm font-medium text-slate-200 mb-1">
                 Full Name *
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                  <User className="h-5 w-5 text-slate-300" />
                 </div>
                 <input
                   id="name"
                   name="name"
                   type="text"
                   autoComplete="name"
-                  className={`input-field pl-10 ${errors.name ? 'border-red-300 focus:ring-red-500' : ''}`}
+                  className={`register-input pl-10 ${errors.name ? 'border-red-300 focus:ring-red-500' : ''}`}
                   placeholder="Enter your full name"
                   value={formData.name}
                   onChange={handleChange}
@@ -187,25 +188,24 @@ const RegisterPage = () => {
                 />
               </div>
               {errors.name && (
-                <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                <p className="mt-1 text-sm text-red-400">{errors.name}</p>
               )}
             </div>
 
-            {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-slate-200 mb-1">
                 Email Address *
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                 
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                  <Mail className="h-5 w-5 text-slate-300" />
                 </div>
                 <input
                   id="email"
                   name="email"
                   type="email"
                   autoComplete="email"
-                  className={`input-field pl-10 ${errors.email ? 'border-red-300 focus:ring-red-500' : ''}`}
+                  className={`register-input pl-10 ${errors.email ? 'border-red-300 focus:ring-red-500' : ''}`}
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
@@ -213,19 +213,18 @@ const RegisterPage = () => {
                 />
               </div>
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                <p className="mt-1 text-sm text-red-400">{errors.email}</p>
               )}
             </div>
 
-            {/* Role Selection */}
             <div>
-              <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="role" className="block text-sm font-medium text-slate-200 mb-1">
                 Role *
               </label>
               <select
                 id="role"
                 name="role"
-                className="input-field"
+                className="register-input"
                 value={formData.role}
                 onChange={handleChange}
                 disabled={isLoading}
@@ -234,49 +233,51 @@ const RegisterPage = () => {
                 <option value="organizer">Event Organizer</option>
                 <option value="admin">Admin</option>
               </select>
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-slate-300">
                 Admin accounts require a secret key
               </p>
             </div>
-            {/* Admin Secret Key (only shown when admin role selected) */}
-{formData.role === 'admin' && (
-    <div>
-        <label htmlFor="adminKey" className="block text-sm font-medium text-gray-700 mb-1">
-            Admin Secret Key *
-        </label>
-        <div className="relative">
-            <input
-                id="adminKey"
-                name="adminKey"
-                type="password"
-                className={`input-field ${errors.adminKey ? 'border-red-300 focus:ring-red-500' : ''}`}
-                placeholder="Enter admin secret key"
-                value={formData.adminKey}
-                onChange={handleChange}
-                disabled={isLoading}
-            />
-        </div>
-        {errors.adminKey && (
-            <p className="mt-1 text-sm text-red-600">{errors.adminKey}</p>
-        )}
-    </div>
-)}
 
-            {/* Student ID (conditional) */}
+            {formData.role === 'admin' && (
+              <div>
+                <label htmlFor="adminKey" className="block text-sm font-medium text-slate-200 mb-1">
+                  Admin Secret Key *
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                    <Lock className="h-5 w-5 text-slate-300" />
+                  </div>
+                  <input
+                    id="adminKey"
+                    name="adminKey"
+                    type="password"
+                    className={`register-input pl-10 ${errors.adminKey ? 'border-red-300 focus:ring-red-500' : ''}`}
+                    placeholder="Enter admin secret key"
+                    value={formData.adminKey}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                  />
+                </div>
+                {errors.adminKey && (
+                  <p className="mt-1 text-sm text-red-400">{errors.adminKey}</p>
+                )}
+              </div>
+            )}
+
             {formData.role === 'student' && (
               <div>
-                <label htmlFor="studentId" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="studentId" className="block text-sm font-medium text-slate-200 mb-1">
                   Student ID *
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                    <CreditCard className="h-5 w-5 text-slate-300" />
                   </div>
                   <input
                     id="studentId"
                     name="studentId"
                     type="text"
-                    className={`input-field pl-10 ${errors.studentId ? 'border-red-300 focus:ring-red-500' : ''}`}
+                    className={`register-input pl-10 ${errors.studentId ? 'border-red-300 focus:ring-red-500' : ''}`}
                     placeholder="Enter your student ID"
                     value={formData.studentId}
                     onChange={handleChange}
@@ -284,23 +285,23 @@ const RegisterPage = () => {
                   />
                 </div>
                 {errors.studentId && (
-                  <p className="mt-1 text-sm text-red-600">{errors.studentId}</p>
+                  <p className="mt-1 text-sm text-red-400">{errors.studentId}</p>
                 )}
               </div>
             )}
 
-            {/* Department */}
             <div>
-              <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="department" className="block text-sm font-medium text-slate-200 mb-1">
                 Department *
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                  <Building className="h-5 w-5 text-slate-300" />
                 </div>
                 <select
                   id="department"
                   name="department"
-                  className={`input-field pl-10 ${errors.department ? 'border-red-300 focus:ring-red-500' : ''}`}
+                  className={`register-input pl-10 ${errors.department ? 'border-red-300 focus:ring-red-500' : ''}`}
                   value={formData.department}
                   onChange={handleChange}
                   disabled={isLoading}
@@ -312,23 +313,23 @@ const RegisterPage = () => {
                 </select>
               </div>
               {errors.department && (
-                <p className="mt-1 text-sm text-red-600">{errors.department}</p>
+                <p className="mt-1 text-sm text-red-400">{errors.department}</p>
               )}
             </div>
 
-            {/* Phone (optional) */}
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="phone" className="block text-sm font-medium text-slate-200 mb-1">
                 Phone Number (optional)
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                  <Phone className="h-5 w-5 text-slate-300" />
                 </div>
                 <input
                   id="phone"
                   name="phone"
                   type="tel"
-                  className={`input-field pl-10 ${errors.phone ? 'border-red-300 focus:ring-red-500' : ''}`}
+                  className={`register-input pl-10 ${errors.phone ? 'border-red-300 focus:ring-red-500' : ''}`}
                   placeholder="Enter your phone number"
                   value={formData.phone}
                   onChange={handleChange}
@@ -336,25 +337,24 @@ const RegisterPage = () => {
                 />
               </div>
               {errors.phone && (
-                <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
+                <p className="mt-1 text-sm text-red-400">{errors.phone}</p>
               )}
             </div>
 
-            {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-slate-200 mb-1">
                 Password *
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                  <Lock className="h-5 w-5 text-slate-300" />
                 </div>
                 <input
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="new-password"
-                  className={`input-field pl-10 pr-10 ${errors.password ? 'border-red-300 focus:ring-red-500' : ''}`}
+                  className={`register-input pl-10 pr-10 ${errors.password ? 'border-red-300 focus:ring-red-500' : ''}`}
                   placeholder="Create a password"
                   value={formData.password}
                   onChange={handleChange}
@@ -362,37 +362,36 @@ const RegisterPage = () => {
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-300 hover:text-sky-200"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={isLoading}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400" />
+                    <EyeOff className="h-5 w-5" />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400" />
+                    <Eye className="h-5 w-5" />
                   )}
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                <p className="mt-1 text-sm text-red-400">{errors.password}</p>
               )}
             </div>
 
-            {/* Confirm Password Field */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-200 mb-1">
                 Confirm Password *
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                  <Lock className="h-5 w-5 text-slate-300" />
                 </div>
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
                   autoComplete="new-password"
-                  className={`input-field pl-10 pr-10 ${errors.confirmPassword ? 'border-red-300 focus:ring-red-500' : ''}`}
+                  className={`register-input pl-10 pr-10 ${errors.confirmPassword ? 'border-red-300 focus:ring-red-500' : ''}`}
                   placeholder="Confirm your password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
@@ -400,45 +399,43 @@ const RegisterPage = () => {
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-300 hover:text-sky-200"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   disabled={isLoading}
                 >
                   {showConfirmPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400" />
+                    <EyeOff className="h-5 w-5" />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400" />
+                    <Eye className="h-5 w-5" />
                   )}
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
+                <p className="mt-1 text-sm text-red-400">{errors.confirmPassword}</p>
               )}
             </div>
 
-            {/* Terms Checkbox */}
             <div className="flex items-start">
               <input
                 id="terms"
                 name="terms"
                 type="checkbox"
                 required
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
+                className="h-4 w-4 mt-1 rounded border-slate-400 bg-slate-900 text-sky-400 focus:ring-sky-500"
                 disabled={isLoading}
               />
-              <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
+              <label htmlFor="terms" className="ml-2 block text-sm text-slate-200">
                 I agree to the{' '}
-                <Link to="/terms" className="text-blue-600 hover:text-blue-500 font-medium">
+                <Link to="/terms" className="text-sky-300 hover:text-sky-200 font-medium">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link to="/privacy" className="text-blue-600 hover:text-blue-500 font-medium">
+                <Link to="/privacy" className="text-sky-300 hover:text-sky-200 font-medium">
                   Privacy Policy
                 </Link>
               </label>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
@@ -455,13 +452,12 @@ const RegisterPage = () => {
             </button>
           </form>
 
-          {/* Login Link */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-slate-300">
               Already have an account?{' '}
               <Link
                 to="/login"
-                className="text-blue-600 hover:text-blue-500 font-medium"
+                className="text-sky-300 hover:text-sky-200 font-medium"
               >
                 Sign in
               </Link>

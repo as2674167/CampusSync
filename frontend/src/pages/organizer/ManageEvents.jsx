@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
-import { Link ,useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { eventsAPI } from '../../services/api'
-import { 
-  Calendar, 
-  Users, 
-  MapPin, 
-  Plus, 
-  Edit, 
-  Trash2, 
+import {
+  Calendar,
+  Users,
+  MapPin,
+  Plus,
+  Edit,
+  Trash2,
   Eye,
   Clock,
   CheckCircle,
@@ -22,7 +22,7 @@ const ManageEvents = () => {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
   const [reload, setReload] = useState(false)
-  const location = useLocation() 
+  const location = useLocation()
 
   const filters = [
     { value: 'all', label: 'All Events' },
@@ -31,20 +31,20 @@ const ManageEvents = () => {
     { value: 'rejected', label: 'Rejected' }
   ]
 
-useEffect(() => {
-  if (location.state?.reload) {
-    setReload(prev => !prev)  // triggers re-fetch
-  }
-}, [location.state])
+  useEffect(() => {
+    if (location.state?.reload) {
+      setReload((prev) => !prev) // triggers re-fetch
+    }
+  }, [location.state])
 
-    useEffect(() => {
+  useEffect(() => {
     fetchEvents()
   }, [filter, reload])
 
   const fetchEvents = async () => {
     try {
       setLoading(true)
-      const params = { 
+      const params = {
         ...(filter !== 'all' && { status: filter })
       }
       const response = await eventsAPI.getEvents(params)
@@ -63,7 +63,8 @@ useEffect(() => {
         toast.success('Event deleted successfully')
         fetchEvents()
       } catch (error) {
-        const message = error.response?.data?.message || 'Failed to delete event'
+        const message =
+          error.response?.data?.message || 'Failed to delete event'
         toast.error(message)
       }
     }
@@ -72,168 +73,220 @@ useEffect(() => {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'approved':
-        return <CheckCircle className="h-5 w-5 text-green-500" />
+        return <CheckCircle className="h-5 w-5 text-emerald-500" />
       case 'rejected':
-        return <XCircle className="h-5 w-5 text-red-500" />
+        return <XCircle className="h-5 w-5 text-rose-500" />
       default:
-        return <Clock className="h-5 w-5 text-yellow-500" />
+        return <Clock className="h-5 w-5 text-amber-500" />
     }
   }
 
   const getStatusColor = (status) => {
     const colors = {
-      approved: 'bg-green-100 text-green-800',
-      pending: 'bg-yellow-100 text-yellow-800',
-      rejected: 'bg-red-100 text-red-800'
+      approved: 'bg-emerald-50 text-emerald-700',
+      pending: 'bg-amber-50 text-amber-700',
+      rejected: 'bg-rose-50 text-rose-700'
     }
-    return colors[status] || 'bg-gray-100 text-gray-800'
+    return colors[status] || 'bg-slate-50 text-slate-700'
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.18),_transparent_40%),radial-gradient(circle_at_bottom_right,_rgba(129,140,248,0.16),_transparent_35%),linear-gradient(to_bottom,_#f5f7ff,_#edf2ff,_#f8fafc)] py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="mb-8 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Manage Events</h1>
-            <p className="text-gray-600 mt-2">View and manage your created events</p>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+              Manage Events
+            </h1>
+            <p className="mt-2 text-slate-600">
+              View and manage all the events you&apos;ve created
+            </p>
           </div>
-          <Link to="/organizer/create-event" className="btn btn-primary">
-            <Plus className="h-4 w-4 mr-2" />
+          <Link
+            to="/organizer/create-event"
+            className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-600 to-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(79,70,229,0.45)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(79,70,229,0.55)]"
+          >
+            <Plus className="mr-2 h-4 w-4" />
             Create Event
           </Link>
         </div>
 
         {/* Filter Buttons */}
         <div className="mb-6">
-          <div className="flex flex-wrap gap-2">
-            {filters.map((filterOption) => (
-              <button
-                key={filterOption.value}
-                onClick={() => setFilter(filterOption.value)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                  filter === filterOption.value
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                }`}
-              >
-                {filterOption.label}
-              </button>
-            ))}
+          <div className="inline-flex flex-wrap gap-2 rounded-full bg-white/60 p-1 shadow-[0_10px_35px_rgba(15,23,42,0.12)] backdrop-blur">
+            {filters.map((filterOption) => {
+              const active = filter === filterOption.value
+              return (
+                <button
+                  key={filterOption.value}
+                  onClick={() => setFilter(filterOption.value)}
+                  className={`rounded-full px-4 py-1.5 text-xs md:text-sm font-medium transition-all duration-200 ${
+                    active
+                      ? 'bg-slate-900 text-white shadow-[0_10px_30px_rgba(15,23,42,0.45)] scale-[1.03]'
+                      : 'bg-transparent text-slate-700 hover:bg-slate-100'
+                  }`}
+                >
+                  {filterOption.label}
+                </button>
+              )
+            })}
           </div>
         </div>
 
         {/* Events List */}
         {loading ? (
-          <div className="flex justify-center items-center py-12">
+          <div className="flex items-center justify-center py-12">
             <LoadingSpinner size="large" text="Loading your events..." />
           </div>
         ) : events.length === 0 ? (
-          <div className="text-center py-12">
-            <Calendar className="mx-auto h-16 w-16 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
-            <p className="text-gray-600 mb-6">
-              {filter === 'all' 
-                ? "You haven't created any events yet." 
+          <div className="mx-auto max-w-xl rounded-[26px] border border-white/70 bg-white/95 px-6 py-12 text-center shadow-[0_20px_60px_rgba(15,23,42,0.18)] backdrop-blur">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-slate-100">
+              <Calendar className="h-9 w-9 text-slate-400" />
+            </div>
+            <h3 className="mb-2 text-lg font-semibold text-slate-900">
+              No events found
+            </h3>
+            <p className="mb-6 text-sm text-slate-600">
+              {filter === 'all'
+                ? "You haven't created any events yet."
                 : `No ${filter} events found.`}
             </p>
-            <Link to="/organizer/create-event" className="btn btn-primary">
-              <Plus className="h-4 w-4 mr-2" />
+            <Link
+              to="/organizer/create-event"
+              className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-600 to-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(79,70,229,0.45)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(79,70,229,0.55)]"
+            >
+              <Plus className="mr-2 h-4 w-4" />
               Create Your First Event
             </Link>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-5">
             {events.map((event) => (
-              <div key={event._id} className="card p-6 hover:shadow-md transition-shadow duration-200">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-3 mb-2">
+              <div
+                key={event._id}
+                className="group overflow-hidden rounded-[24px] border border-white/80 bg-white/95 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.10)] backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:border-blue-200 hover:bg-gradient-to-b hover:from-white/98 hover:via-slate-50/95 hover:to-blue-50/80 hover:shadow-[0_28px_75px_rgba(59,130,246,0.22)]"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0 flex-1">
+                    {/* Title + status */}
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
                       {getStatusIcon(event.status)}
-                      <h3 className="text-xl font-semibold text-gray-900 truncate">
+                      <h3 className="truncate text-lg md:text-xl font-semibold text-slate-900">
                         {event.title}
                       </h3>
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(event.status)}`}>
+                      <span
+                        className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold capitalize ${getStatusColor(
+                          event.status
+                        )}`}
+                      >
                         {event.status}
                       </span>
                     </div>
 
-                    <p className="text-gray-600 mb-4 line-clamp-2">
-                      {event.description}
-                    </p>
+                    {/* Description */}
+                    {event.description && (
+                      <p className="mb-3 text-sm text-slate-600 line-clamp-2">
+                        {event.description}
+                      </p>
+                    )}
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        {formatDate(event.date)} at {formatTime(event.time)}
+                    {/* Event meta grid */}
+                    <div className="mb-4 grid gap-4 text-sm text-slate-600 md:grid-cols-2 lg:grid-cols-4">
+                      <div className="flex items-center">
+                        <Calendar className="mr-2 h-4 w-4 text-blue-500" />
+                        <span>
+                          {formatDate(event.date)} at {formatTime(event.time)}
+                        </span>
                       </div>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <MapPin className="h-4 w-4 mr-2" />
-                        {event.venue}
+                      <div className="flex items-center">
+                        <MapPin className="mr-2 h-4 w-4 text-pink-500" />
+                        <span>{event.venue}</span>
                       </div>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Users className="h-4 w-4 mr-2" />
-                        {event.registrationCount || 0} / {event.capacity}
+                      <div className="flex items-center">
+                        <Users className="mr-2 h-4 w-4 text-violet-500" />
+                        <span>
+                          {event.registrationCount || 0} / {event.capacity}
+                        </span>
                       </div>
-                      <div className="text-sm text-gray-600">
-                        <span className="font-medium">Category:</span> {event.category}
+                      <div>
+                        <span className="font-medium text-slate-700">
+                          Category:
+                        </span>{' '}
+                        {event.category}
                       </div>
                     </div>
 
                     {/* Registration Progress Bar */}
-                    <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+                    <div className="mb-2 w-full rounded-full bg-slate-200/70">
                       <div
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        className="h-2 rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-500 transition-all duration-500"
                         style={{
-                          width: `${Math.min(100, ((event.registrationCount || 0) / event.capacity) * 100)}%`
+                          width: `${Math.min(
+                            100,
+                            ((event.registrationCount || 0) / event.capacity) *
+                              100
+                          ).toFixed(0)}%`
                         }}
                       />
+                    </div>
+                    <div className="text-right text-[11px] font-medium text-slate-500">
+                      {Math.min(
+                        100,
+                        ((event.registrationCount || 0) / event.capacity) * 100
+                      ).toFixed(0)}
+                      % filled
                     </div>
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="ml-6 flex items-center space-x-2">
-                    <Link
-                      to={`/events/${event._id}`}
-                      className="p-2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
-                      title="View Event"
-                    >
-                      <Eye className="h-5 w-5" />
-                    </Link>
-
-                    <Link
-                       to={`/organizer/events/${event._id}/registrants`}
-                       className="p-2 text-indigo-500 hover:text-indigo-700 transition-colors duration-200"
-                       title="View Registrants"
-            >
-                       <Users className="h-5 w-5" />
-                    </Link>
-
-                    {event.status !== 'rejected' && new Date(event.date) > new Date() && (
-                      <button
-                        className="p-2 text-blue-400 hover:text-blue-600 transition-colors duration-200"
-                        title="Edit Event"
+                  <div className="ml-4 flex flex-shrink-0 flex-col items-end gap-1">
+                    <div className="flex items-center gap-1.5">
+                      <Link
+                        to={`/events/${event._id}`}
+                        className="rounded-full p-2 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-100 hover:text-slate-700"
+                        title="View Event"
                       >
-                        <Edit className="h-5 w-5" />
-                      </button>
-                    )}
+                        <Eye className="h-4 w-4" />
+                      </Link>
 
-                    {(event.registrationCount || 0) === 0 && (
-                      <button
-                        onClick={() => handleDeleteEvent(event._id)}
-                        className="p-2 text-red-400 hover:text-red-600 transition-colors duration-200"
-                        title="Delete Event"
+                      <Link
+                        to={`/organizer/events/${event._id}/registrants`}
+                        className="rounded-full p-2 text-indigo-500 transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-50 hover:text-indigo-700"
+                        title="View Registrants"
                       >
-                        <Trash2 className="h-5 w-5" />
-                      </button>
-                    )}
+                        <Users className="h-4 w-4" />
+                      </Link>
+
+                      {event.status !== 'rejected' &&
+                        new Date(event.date) > new Date() && (
+                          <button
+                            className="rounded-full p-2 text-blue-400 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-50 hover:text-blue-600"
+                            title="Edit Event"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                        )}
+
+                      {(event.registrationCount || 0) === 0 && (
+                        <button
+                          onClick={() => handleDeleteEvent(event._id)}
+                          className="rounded-full p-2 text-rose-400 transition-all duration-200 hover:-translate-y-0.5 hover:bg-rose-50 hover:text-rose-600"
+                          title="Delete Event"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
 
+                {/* Rejection reason */}
                 {event.rejectionReason && (
-                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-700">
-                      <span className="font-medium">Rejection Reason:</span> {event.rejectionReason}
+                  <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50/80 px-4 py-3">
+                    <p className="text-xs text-rose-700">
+                      <span className="font-semibold">Rejection Reason:</span>{' '}
+                      {event.rejectionReason}
                     </p>
                   </div>
                 )}

@@ -25,7 +25,6 @@ const LoginPage = () => {
       ...prev,
       [name]: value
     }))
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -73,7 +72,6 @@ const LoginPage = () => {
     }
   }
 
-  // Demo accounts for easy testing
   const demoAccounts = [
     { email: 'admin@college.edu', password: 'Admin123', role: 'Admin' },
     { email: 'john.organizer@college.edu', password: 'Org123', role: 'Organizer' },
@@ -88,56 +86,73 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="login-page-shell min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
-        <div className="text-center">
-          <div className="flex justify-center">
-            <Calendar className="h-12 w-12 text-white" />
+        <div className="text-center login-header-block animate-fadeInUp">
+          <div className="flex justify-center mb-4">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 border border-white/25 shadow-[0_18px_45px_rgba(15,23,42,0.7)]">
+              <Calendar className="h-8 w-8 text-sky-200" />
+            </div>
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-white">
+          <h2 className="mt-4 text-3xl font-bold text-white tracking-tight">
             Welcome back
           </h2>
-          <p className="mt-2 text-sm text-blue-100">
+          <p className="mt-2 text-sm text-sky-100">
             Sign in to your EventHub account
           </p>
         </div>
 
         {/* Demo Accounts */}
-        <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
-          <p className="text-white text-sm font-medium mb-3">Quick Demo Access:</p>
+        <div className="login-demo-box animate-fadeInUp">
+          <p className="text-sky-50 text-sm font-medium mb-3">Quick Demo Access:</p>
           <div className="grid grid-cols-1 gap-2">
             {demoAccounts.map((account, index) => (
               <button
                 key={index}
+                type="button"
                 onClick={() => fillDemoAccount(account)}
-                className="text-left p-2 rounded-md bg-white bg-opacity-20 hover:bg-opacity-30 transition-colors duration-200"
+                className="login-demo-item"
               >
-                <div className="text-white text-sm font-medium">{account.role}</div>
-                <div className="text-blue-100 text-xs">{account.email}</div>
+                <div className="flex justify-between items-center">
+                  <div className="text-sky-50 text-sm font-semibold">
+                    {account.role}
+                  </div>
+                  <span className="text-[10px] uppercase tracking-wide text-sky-200/80">
+                    Fill credentials
+                  </span>
+                </div>
+                <div className="text-sky-100 text-xs mt-0.5">
+                  {account.email}
+                </div>
               </button>
             ))}
           </div>
         </div>
 
         {/* Login Form */}
-        <div className="bg-white rounded-xl shadow-2xl p-8">
+        <div className="login-card-main animate-fadeInUp">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-slate-700 mb-1"
+              >
                 Email Address
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+                  <Mail className="h-5 w-5 text-slate-400" />
                 </div>
                 <input
                   id="email"
                   name="email"
                   type="email"
                   autoComplete="email"
-                  className={`input-field pl-10 ${errors.email ? 'border-red-300 focus:ring-red-500' : ''}`}
+                  className={`login-input pl-10 ${
+                    errors.email ? 'border-red-300 focus:ring-red-500' : ''
+                  }`}
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
@@ -151,19 +166,24 @@ const LoginPage = () => {
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-slate-700 mb-1"
+              >
                 Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                  <Lock className="h-5 w-5 text-slate-400" />
                 </div>
                 <input
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
-                  className={`input-field pl-10 pr-10 ${errors.password ? 'border-red-300 focus:ring-red-500' : ''}`}
+                  className={`login-input pl-10 pr-10 ${
+                    errors.password ? 'border-red-300 focus:ring-red-500' : ''
+                  }`}
                   placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
@@ -176,9 +196,9 @@ const LoginPage = () => {
                   disabled={isLoading}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400" />
+                    <EyeOff className="h-5 w-5 text-slate-400" />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400" />
+                    <Eye className="h-5 w-5 text-slate-400" />
                   )}
                 </button>
               </div>
@@ -194,9 +214,12 @@ const LoginPage = () => {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                <label
+                  htmlFor="remember-me"
+                  className="ml-2 block text-sm text-slate-900"
+                >
                   Remember me
                 </label>
               </div>
@@ -227,8 +250,8 @@ const LoginPage = () => {
 
           {/* Register Link */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
+            <p className="text-sm text-slate-600">
+              Don&apos;t have an account?{' '}
               <Link
                 to="/register"
                 className="text-blue-600 hover:text-blue-500 font-medium"
@@ -241,7 +264,7 @@ const LoginPage = () => {
 
         {/* Footer */}
         <div className="text-center">
-          <p className="text-xs text-blue-100">
+          <p className="text-xs text-sky-100">
             By signing in, you agree to our{' '}
             <Link to="/terms" className="underline hover:text-white">
               Terms of Service

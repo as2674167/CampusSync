@@ -3,34 +3,15 @@ const path = require('path');
 const fs = require('fs');
 
 // Create uploads directory if it doesn't exist
-const uploadDir = 'uploads/events';
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Configure storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        // Create unique filename: event-timestamp-randomnumber.ext
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        const ext = path.extname(file.originalname);
-        cb(null, `event-${uniqueSuffix}${ext}`);
-    }
-});
-
+const storage = multer.memoryStorage();
+// File filter - only accept images
 // File filter - only accept images
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
-
-    if (allowedTypes.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
-        cb(new Error('Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed.'), false);
-    }
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+  if (allowedTypes.includes(file.mimetype)) cb(null, true);
+  else cb(new Error('Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed.'), false);
 };
+
 
 // Configure multer
 const uploadEventImage = multer({

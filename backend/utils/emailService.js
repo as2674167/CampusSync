@@ -1,8 +1,9 @@
 const nodemailer = require('nodemailer');
+const transporter = nodemailer.default || nodemailer;
 
 class EmailService {
     constructor() {
-        this.transporter = nodemailer.createTransporter({
+        this.transporter = transporter.createTransport({
             host: process.env.EMAIL_HOST || 'smtp.gmail.com',
             port: process.env.EMAIL_PORT || 587,
             secure: false,

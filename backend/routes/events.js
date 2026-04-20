@@ -2,6 +2,8 @@ const express = require('express');
 const Event = require('../models/Event');
 const Registration = require('../models/Registration');
 const User = require('../models/User');
+const imagekit = require('../config/imagekit');
+const emailService = require('../utils/emailService');
 const { authenticate, authorize, authorizeOwnerOrAdmin, optionalAuth } = require('../middleware/auth');
 const { validateEvent, validateObjectId, validatePagination } = require('../middleware/validation');
 // 👇 ADD THIS IMPORT
@@ -166,61 +168,62 @@ router.get('/:id', optionalAuth, validateObjectId('id'), async (req, res) => {
 // @route   POST /api/events
 // @desc    Create new event
 // @access  Private (Organizer, Admin)
-// 👇 UPDATED ROUTE - Added upload middleware and parseFormDataFields
-router.post('/',
-    authenticate,
-    authorize('organizer', 'admin'),
-    uploadEventImage.single('image'),    // 👈 ADDED - handles file upload
-    handleUploadError,                    // 👈 ADDED - handles upload errors
-    parseFormDataFields,                  // 👈 ADDED - parses FormData strings
-    validateEvent,
-    async (req, res) => {
-        try {
-            // 👇 ADDED - Get image path if uploaded
-            const imagePath = req.file ? `/uploads/events/${req.file.filename}` : null;
+router.post(
+  '/',
+  authenticate,
+  authorize('organizer', 'admin'),
+  uploadEventImage.single('image'),
+  handleUploadError,
+  parseFormDataFields,
+  validateEvent,
+  async (req, res) => {
+    try {
+      let imageUrl = null;
 
-            const eventData = {
-                ...req.body,
-                organizer: req.user._id,
-                organizerName: req.user.name,
-                status: req.user.role === 'admin' ? 'approved' : 'pending',
-                image: imagePath,  // 👈 ADDED
-            };
+      // If an image was uploaded, send it to ImageKit
+      if (req.file) {
+        const uploadResponse = await imagekit.upload({
+          file: req.file.buffer,              // file buffer from multer
+          fileName: req.file.originalname,    // original file name
+          folder: '/events',                  // folder in ImageKit media library (optional)
+        });
+        imageUrl = uploadResponse.url;        // CDN URL to store in DB
+      }
 
-            const event = new Event(eventData);
-            await event.save();
+      const eventData = {
+        ...req.body,
+        organizer: req.user._id,
+        organizerName: req.user.name,
+        status: req.user.role === 'admin' ? 'approved' : 'pending',
+        image: imageUrl,                      // store ImageKit URL instead of /uploads/...
+      };
 
-            await event.populate('organizer', 'name email department');
+      const event = new Event(eventData);
+      await event.save();
 
-            res.status(201).json({
-                message: 'Event created successfully',
-                event
-            });
-        } catch (error) {
-            console.error('Create event error:', error);
+      await event.populate('organizer', 'name email department');
 
-            // 👇 ADDED - Delete uploaded file if event creation fails
-            if (req.file) {
-                const filePath = path.join(__dirname, '..', 'uploads', 'events', req.file.filename);
-                fs.unlink(filePath, (err) => {
-                    if (err) console.error('Error deleting file:', err);
-                });
-            }
+      res.status(201).json({
+        message: 'Event created successfully',
+        event,
+      });
+    } catch (error) {
+      console.error('Create event error:', error);
 
-            if (error.name === 'ValidationError') {
-                return res.status(400).json({
-                    message: 'Validation error',
-                    errors: Object.values(error.errors).map(err => ({
-                        field: err.path,
-                        message: err.message
-                    }))
-                });
-            }
-            res.status(500).json({ message: 'Server error creating event' });
-        }
+      if (error.name === 'ValidationError') {
+        return res.status(400).json({
+          message: 'Validation error',
+          errors: Object.values(error.errors).map((err) => ({
+            field: err.path,
+            message: err.message,
+          })),
+        });
+      }
+
+      res.status(500).json({ message: 'Server error creating event' });
     }
+  }
 );
-
 // @route   PUT /api/events/:id
 // @desc    Update event
 // @access  Private (Event organizer, Admin)
@@ -264,16 +267,14 @@ router.put('/:id',
 
             const updateData = { ...req.body };
 
-            // 👇 ADDED - Handle image update
+            // If a new image is uploaded, send it to ImageKit
             if (req.file) {
-                // Delete old image if exists
-                if (event.image) {
-                    const oldImagePath = path.join(__dirname, '..', event.image);
-                    fs.unlink(oldImagePath, (err) => {
-                        if (err) console.error('Error deleting old image:', err);
-                    });
-                }
-                updateData.image = `/uploads/events/${req.file.filename}`;
+             const uploadResponse = await imagekit.upload({
+             file: req.file.buffer,
+             fileName: req.file.originalname,
+             folder: '/events',
+             });
+             updateData.image = uploadResponse.url;
             }
 
             if (req.user.role !== 'admin' && event.status === 'approved') {
@@ -292,12 +293,6 @@ router.put('/:id',
             });
         } catch (error) {
             console.error('Update event error:', error);
-
-            // 👇 Clean up uploaded file on error
-            if (req.file) {
-                const filePath = path.join(__dirname, '..', 'uploads', 'events', req.file.filename);
-                fs.unlink(filePath, (err) => { if (err) console.error(err); });
-            }
 
             if (error.name === 'ValidationError') {
                 return res.status(400).json({
@@ -377,6 +372,12 @@ router.put('/:id/status', authenticate, authorize('admin'), validateObjectId('id
             updateData,
             { new: true }
         ).populate('organizer', 'name email');
+
+        if (status === 'approved') {
+        await emailService.sendEventApprovalNotification(event.organizer, event);
+        } else if (status === 'rejected') {
+        await emailService.sendEventRejectionNotification(event.organizer, event, rejectionReason);
+        }
 
         if (!event) {
             return res.status(404).json({ message: 'Event not found' });
