@@ -152,4 +152,13 @@ export const galleryAPI = {
   toggleLike:  (id) => api.post(`/gallery/${id}/like`),
 }
 
+// Notices API
+export const noticesAPI = {
+  getNotices: (params = {}) => api.get('/notices', { params }),        // public
+  getAllNotices: () => api.get('/notices/all'),                          // admin only
+  createNotice: (data) => api.post('/notices', data),
+  updateNotice: (id, data) => api.put(`/notices/${id}`, data),
+  deleteNotice: (id) => api.delete(`/notices/${id}`),
+}
+
 export default api

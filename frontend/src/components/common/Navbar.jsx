@@ -7,8 +7,9 @@ import {
   Calendar,
   User,
   LogOut,
+  BellRing,
   LayoutDashboard,
-  Image as ImageIcon
+  Image as ImageIcon,
 } from 'lucide-react'
 
 const Navbar = () => {
@@ -30,9 +31,10 @@ const Navbar = () => {
   }
 
   const navLinks = [
-    { name: 'Home',      path: '/'        },
-    { name: 'Events',    path: '/events'  },
-    { name: 'Gallery',   path: '/gallery' },
+    { name: 'Home',    path: '/'        },
+    { name: 'Events',  path: '/events'  },
+    { name: 'Gallery', path: '/gallery' },
+    { name: 'Notices', path: '/notices' },
     ...(isAuthenticated ? [{ name: 'Dashboard', path: getDashboardPath() }] : []),
   ]
 
@@ -67,7 +69,14 @@ const Navbar = () => {
                   (isActive(link.path) ? 'nav-pill-active' : 'nav-pill-idle')
                 }
               >
-                {link.name}
+                {link.name === 'Notices' ? (
+                  <span className="flex items-center gap-1.5">
+                    <BellRing className="h-3.5 w-3.5" />
+                    Notices
+                  </span>
+                ) : (
+                  link.name
+                )}
               </Link>
             ))}
           </div>
@@ -91,7 +100,7 @@ const Navbar = () => {
                   </div>
                 </button>
 
-                {/* ── Desktop Dropdown ── */}
+                {/* Desktop Dropdown */}
                 {userMenuOpen && (
                   <div className="user-dropdown">
                     <Link
@@ -103,7 +112,6 @@ const Navbar = () => {
                       Dashboard
                     </Link>
 
-                    {/* ✅ GALLERY LINK — desktop dropdown */}
                     <Link
                       to="/gallery"
                       className="user-dropdown-item"
@@ -114,6 +122,15 @@ const Navbar = () => {
                     </Link>
 
                     <Link
+                      to="/notices"
+                      className="user-dropdown-item"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <BellRing className="mr-2 h-4 w-4" />
+                      Notices
+                    </Link>
+
+                    <Link
                       to="/profile"
                       className="user-dropdown-item"
                       onClick={() => setUserMenuOpen(false)}
@@ -121,6 +138,7 @@ const Navbar = () => {
                       <User className="mr-2 h-4 w-4" />
                       Profile
                     </Link>
+
                     <button
                       onClick={handleLogout}
                       className="user-dropdown-item text-red-300 hover:text-red-200"
@@ -150,7 +168,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* ── Mobile Navigation Menu ── */}
+        {/* Mobile Navigation Menu */}
         {isOpen && (
           <div className="md:hidden mt-2 space-y-2 pb-3">
 
@@ -161,13 +179,14 @@ const Navbar = () => {
                   key={link.path}
                   to={link.path}
                   className={
-                    'block rounded-xl px-3 py-2 text-sm font-medium ' +
+                    'flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium ' +
                     (isActive(link.path)
                       ? 'bg-sky-500/20 text-sky-200'
                       : 'text-slate-200 hover:bg-slate-800/70')
                   }
                   onClick={() => setIsOpen(false)}
                 >
+                  {link.name === 'Notices' && <BellRing className="h-4 w-4" />}
                   {link.name}
                 </Link>
               ))}
@@ -190,26 +209,38 @@ const Navbar = () => {
                     </div>
                   </div>
 
-                  {/* ✅ GALLERY LINK — mobile menu */}
                   <Link
                     to="/gallery"
-                    className="block rounded-xl px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800/70"
+                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800/70"
                     onClick={() => setIsOpen(false)}
                   >
+                    <ImageIcon className="h-4 w-4" />
                     Gallery
                   </Link>
 
                   <Link
-                    to="/profile"
-                    className="block rounded-xl px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800/70"
+                    to="/notices"
+                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800/70"
                     onClick={() => setIsOpen(false)}
                   >
+                    <BellRing className="h-4 w-4" />
+                    Notices
+                  </Link>
+
+                  <Link
+                    to="/profile"
+                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-800/70"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <User className="h-4 w-4" />
                     Profile
                   </Link>
+
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left rounded-xl px-3 py-2 text-sm font-medium text-red-300 hover:bg-red-500/10"
+                    className="flex items-center gap-2 w-full text-left rounded-xl px-3 py-2 text-sm font-medium text-red-300 hover:bg-red-500/10"
                   >
+                    <LogOut className="h-4 w-4" />
                     Sign Out
                   </button>
                 </>
