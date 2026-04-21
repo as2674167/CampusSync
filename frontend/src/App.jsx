@@ -17,6 +17,7 @@ import EventDetailPage from './pages/EventDetailPage'
 import ProfilePage from './pages/ProfilePage'
 import NotFoundPage from './pages/NotFoundPage'
 import GalleryPage from './pages/GalleryPage'
+import NoticesPage from './pages/NoticesPage'
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard'
@@ -56,13 +57,14 @@ function App() {
           <Route path="/events" element={<EventsPage />} />
           <Route path="/events/:id" element={<EventDetailPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
-          <Route 
-            path="/login" 
-            element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} 
+          <Route path="/notices" element={<NoticesPage />} />
+          <Route
+            path="/login"
+            element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />}
           />
-          <Route 
-            path="/register" 
-            element={user ? <Navigate to="/dashboard" replace /> : <RegisterPage />} 
+          <Route
+            path="/register"
+            element={user ? <Navigate to="/dashboard" replace /> : <RegisterPage />}
           />
 
           {/* Protected Routes */}
@@ -105,9 +107,9 @@ function App() {
           } />
 
           <Route path="/organizer/edit-event/:id" element={
-          <ProtectedRoute roles={['organizer']}>
-           <CreateEvent />
-           </ProtectedRoute>
+            <ProtectedRoute roles={['organizer']}>
+              <CreateEvent />
+            </ProtectedRoute>
           } />
 
           <Route path="/organizer/manage-events" element={
@@ -119,7 +121,7 @@ function App() {
           <Route path="/organizer/events/:id/registrants" element={
             <ProtectedRoute roles={['organizer']}>
               <EventRegistrantsPage />
-               </ProtectedRoute>
+            </ProtectedRoute>
           } />
 
           {/* Admin Routes */}

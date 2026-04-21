@@ -4,7 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
-const path = require('path');  // 👈 ADD THIS
+const path = require('path');
 require('dotenv').config();
 
 // Import routes
@@ -13,12 +13,12 @@ const eventRoutes = require('./routes/events');
 const userRoutes = require('./routes/users');
 const registrationRoutes = require('./routes/registrations');
 const galleryRoutes = require('./routes/gallery');
+const noticeRoutes = require('./routes/notices');   // ← ADDED
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Security middleware
-// 👇 UPDATED - helmet needs crossOriginResourcePolicy disabled to allow serving images
 app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
@@ -30,8 +30,8 @@ app.use(cors({
 
 // Rate limiting
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each IP to 100 requests per windowMs
+    windowMs: 15 * 60 * 1000,
+    max: 100
 });
 app.use('/api/', limiter);
 
@@ -42,7 +42,7 @@ app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// 👇 ADD THIS - Serve uploaded files statically
+// Serve uploaded files statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Database connection
@@ -59,11 +59,12 @@ app.use('/api/events', eventRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/registrations', registrationRoutes);
 app.use('/api/gallery', galleryRoutes);
+app.use('/api/notices', noticeRoutes);   // ← ADDED
 
-// Health check endpoint
+// Health check
 app.get('/api/health', (req, res) => {
-    res.json({ 
-        status: 'OK', 
+    res.json({
+        status: 'OK',
         timestamp: new Date().toISOString(),
         uptime: process.uptime()
     });
