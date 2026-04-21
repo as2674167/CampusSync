@@ -318,6 +318,13 @@ ESLint with React, React Hooks, and React Refresh plugins configured.
 
 ---
 
+## 👨‍💻 Author
+
+**Aman Kumar Singh**
+- GitHub: [@as2674167](https://github.com/as2674167)
+
+---
+
 ## 📄 License
 
 ISC License — see `backend/package.json` for details.
