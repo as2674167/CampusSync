@@ -259,14 +259,15 @@ const ManageEvents = () => {
                       </Link>
 
                       {event.status !== 'rejected' &&
-                        new Date(event.date) > new Date() && (
-                          <button
-                            className="rounded-full p-2 text-blue-400 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-50 hover:text-blue-600"
-                            title="Edit Event"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
-                        )}
+                      new Date(event.date) > new Date() && (
+                      <Link
+                      to={`/organizer/edit-event/${event._id}`}
+                       className="rounded-full p-2 text-blue-400 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-50 hover:text-blue-600"
+                      title="Edit Event"
+                     >
+                      <Edit className="h-4 w-4" />
+                       </Link>
+                      )}
 
                       {(event.registrationCount || 0) === 0 && (
                         <button
