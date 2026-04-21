@@ -141,4 +141,15 @@ export const getImageUrl = (imagePath) => {
   return `${baseUrl}${imagePath}`
 }
 
+// ── Gallery API ───────────────────────────────────────────────────────────────
+export const galleryAPI = {
+  getImages:   (params = {}) => api.get('/gallery', { params }),
+  uploadImage: (formData)    => api.post('/gallery', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 60000,
+  }),
+  deleteImage: (id) => api.delete(`/gallery/${id}`),
+  toggleLike:  (id) => api.post(`/gallery/${id}/like`),
+}
+
 export default api
