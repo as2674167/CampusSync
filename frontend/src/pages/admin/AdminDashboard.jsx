@@ -121,7 +121,7 @@ const AdminDashboard = () => {
               </div>
               <div className="ml-4">
                 <p className="text-3xl font-bold tracking-tight text-slate-900">
-                  {stats.pendingApprovals || 0}
+                  {stats.pendingEvents || 0}
                 </p>
                 <p className="text-sm font-medium text-slate-600">
                   Pending Approvals
@@ -270,10 +270,10 @@ const AdminDashboard = () => {
           <div className="rounded-[26px] border border-white/60 bg-white/85 p-5 backdrop-blur-sm shadow-[0_18px_60px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_28px_70px_rgba(16,185,129,0.12)]">
             <p className="text-sm font-medium text-slate-500">Approvals</p>
             <p className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
-              {stats.pendingApprovals || 0}
+              {stats.pendingEvents || 0}
             </p>
             <p className="mt-1 text-sm text-slate-600">
-              Pending items waiting for admin review.
+              Pending events waiting for admin review.
             </p>
           </div>
 

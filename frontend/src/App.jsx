@@ -104,6 +104,12 @@ function App() {
             </ProtectedRoute>
           } />
 
+          <Route path="/organizer/edit-event/:id" element={
+          <ProtectedRoute roles={['organizer']}>
+           <CreateEvent />
+           </ProtectedRoute>
+          } />
+
           <Route path="/organizer/manage-events" element={
             <ProtectedRoute roles={['organizer']}>
               <ManageEvents />
