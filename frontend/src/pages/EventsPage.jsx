@@ -18,7 +18,6 @@ import {
   getEventCategoryIcon
 } from '../utils/helpers'
 
-
 const EventsPage = () => {
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
@@ -49,6 +48,7 @@ const EventsPage = () => {
 
   useEffect(() => {
     fetchEvents()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, filters, pagination.current, location.key])
 
   const fetchEvents = async () => {
@@ -67,11 +67,13 @@ const EventsPage = () => {
         : response.data.events
 
       setEvents(eventsData || [])
-      setPagination(response.data.pagination || {
-        current: 1,
-        total: 1,
-        totalEvents: eventsData?.length || 0
-      })
+      setPagination(
+        response.data.pagination || {
+          current: 1,
+          total: 1,
+          totalEvents: eventsData?.length || 0
+        }
+      )
     } catch (error) {
       console.error('Error fetching events:', error)
     } finally {
@@ -81,12 +83,12 @@ const EventsPage = () => {
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value)
-    setPagination(prev => ({ ...prev, current: 1 }))
+    setPagination((prev) => ({ ...prev, current: 1 }))
   }
 
   const handleFilterChange = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }))
-    setPagination(prev => ({ ...prev, current: 1 }))
+    setFilters((prev) => ({ ...prev, [key]: value }))
+    setPagination((prev) => ({ ...prev, current: 1 }))
   }
 
   const clearFilters = () => {
@@ -97,7 +99,7 @@ const EventsPage = () => {
       fromDate: '',
       toDate: ''
     })
-    setPagination(prev => ({ ...prev, current: 1 }))
+    setPagination((prev) => ({ ...prev, current: 1 }))
   }
 
   return (
@@ -121,12 +123,15 @@ const EventsPage = () => {
         {/* Search and Filters Box */}
         <div className="events-toolbar-box p-6 mb-8 animate-fadeInUp">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+            {/* UPDATED: search input layout, logic same */}
+            <div className="relative flex items-center">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/70 border border-slate-200 mr-2">
+                <Search className="h-5 w-5 text-slate-400" />
+              </span>
               <input
                 type="text"
                 placeholder="Search events..."
-                className="events-input pl-10"
+                className="events-input flex-1"
                 value={searchTerm}
                 onChange={handleSearchChange}
               />
@@ -138,8 +143,10 @@ const EventsPage = () => {
               onChange={(e) => handleFilterChange('category', e.target.value)}
             >
               <option value="">All Categories</option>
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
               ))}
             </select>
 
@@ -160,8 +167,15 @@ const EventsPage = () => {
 
           <div className="flex justify-between items-center flex-wrap gap-3">
             <p className="text-sm text-slate-600">
-              Showing <span className="font-semibold text-slate-900">{events.length}</span> of{' '}
-              <span className="font-semibold text-slate-900">{pagination.totalEvents}</span> events
+              Showing{' '}
+              <span className="font-semibold text-slate-900">
+                {events.length}
+              </span>{' '}
+              of{' '}
+              <span className="font-semibold text-slate-900">
+                {pagination.totalEvents}
+              </span>{' '}
+              events
             </p>
             <button
               onClick={clearFilters}
@@ -180,8 +194,12 @@ const EventsPage = () => {
         ) : events.length === 0 ? (
           <div className="events-empty-box text-center py-12 animate-fadeInUp">
             <Calendar className="mx-auto h-16 w-16 text-slate-400 mb-4" />
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">No events found</h3>
-            <p className="text-slate-600">Try adjusting your search criteria or filters</p>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              No events found
+            </h3>
+            <p className="text-slate-600">
+              Try adjusting your search criteria or filters
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -200,10 +218,12 @@ const EventsPage = () => {
           <div className="flex justify-center">
             <nav className="events-pagination-box">
               <button
-                onClick={() => setPagination(prev => ({
-                  ...prev,
-                  current: Math.max(1, prev.current - 1)
-                }))}
+                onClick={() =>
+                  setPagination((prev) => ({
+                    ...prev,
+                    current: Math.max(1, prev.current - 1)
+                  }))
+                }
                 disabled={pagination.current === 1}
                 className="events-page-btn"
               >
@@ -213,10 +233,12 @@ const EventsPage = () => {
               {[...Array(pagination.total)].map((_, index) => (
                 <button
                   key={index + 1}
-                  onClick={() => setPagination(prev => ({
-                    ...prev,
-                    current: index + 1
-                  }))}
+                  onClick={() =>
+                    setPagination((prev) => ({
+                      ...prev,
+                      current: index + 1
+                    }))
+                  }
                   className={`events-page-number ${
                     pagination.current === index + 1 ? 'active' : ''
                   }`}
@@ -226,10 +248,12 @@ const EventsPage = () => {
               ))}
 
               <button
-                onClick={() => setPagination(prev => ({
-                  ...prev,
-                  current: Math.min(prev.total, prev.current + 1)
-                }))}
+                onClick={() =>
+                  setPagination((prev) => ({
+                    ...prev,
+                    current: Math.min(prev.total, prev.current + 1)
+                  }))
+                }
                 disabled={pagination.current === pagination.total}
                 className="events-page-btn"
               >
@@ -250,7 +274,10 @@ const EventCard = ({ event, index }) => {
 
   const progress =
     event.capacity > 0
-      ? `${Math.min(100, ((event.registrationCount || 0) / event.capacity) * 100)}%`
+      ? `${Math.min(
+          100,
+          ((event.registrationCount || 0) / event.capacity) * 100
+        )}%`
       : '0%'
 
   return (
@@ -261,13 +288,18 @@ const EventCard = ({ event, index }) => {
     >
       <div className="relative">
         <img
-          src={event.image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=200&fit=crop'}
+          src={
+            event.image ||
+            'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=200&fit=crop'
+          }
           alt={event.title}
           className="w-full h-48 object-cover rounded-t-[22px] event-card-image-box"
         />
 
         <div className="absolute top-4 left-4">
-          <span className={`px-3 py-1 rounded-full text-xs font-medium bg-white/90 shadow-sm ${statusColor}`}>
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-medium bg-white/90 shadow-sm ${statusColor}`}
+          >
             {statusText}
           </span>
         </div>
@@ -300,7 +332,8 @@ const EventCard = ({ event, index }) => {
         <div className="space-y-2 mb-4">
           <div className="flex items-center text-sm text-slate-600">
             <Calendar className="h-4 w-4 mr-2 text-slate-400" />
-            {event.date ? formatDate(event.date) : 'TBA'} at {event.time ? formatTime(event.time) : 'TBA'}
+            {event.date ? formatDate(event.date) : 'TBA'} at{' '}
+            {event.time ? formatTime(event.time) : 'TBA'}
           </div>
           <div className="flex items-center text-sm text-slate-600">
             <MapPin className="h-4 w-4 mr-2 text-slate-400" />

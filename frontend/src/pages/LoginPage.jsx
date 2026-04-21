@@ -21,12 +21,12 @@ const LoginPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value
     }))
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
         [name]: ''
       }))
@@ -141,16 +141,17 @@ const LoginPage = () => {
               >
                 Email Address
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-slate-400" />
-                </div>
+              {/* Wrapper ko flex banaya, icon ko absolute se hata diya */}
+              <div className="relative flex items-center rounded-2xl bg-transparent">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 border border-white/10 mr-2">
+                  <Mail className="h-5 w-5 text-slate-300" />
+                </span>
                 <input
                   id="email"
                   name="email"
                   type="email"
                   autoComplete="email"
-                  className={`login-input pl-10 ${
+                  className={`login-input flex-1 ${
                     errors.email ? 'border-red-300 focus:ring-red-500' : ''
                   }`}
                   placeholder="Enter your email"
@@ -172,35 +173,38 @@ const LoginPage = () => {
               >
                 Password
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-slate-400" />
+              {/* Yahan bhi same flex wrapper so icon overlap nahi karega */}
+              <div className="relative flex items-center rounded-2xl bg-transparent">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 border border-white/10 mr-2">
+                  <Lock className="h-5 w-5 text-slate-300" />
+                </span>
+                <div className="relative flex-1">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    className={`login-input w-full pr-10 ${
+                      errors.password ? 'border-red-300 focus:ring-red-500' : ''
+                    }`}
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    onClick={() => setShowPassword(!showPassword)}
+                    disabled={isLoading}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5 text-slate-400" />
+                    ) : (
+                      <Eye className="h-5 w-5 text-slate-400" />
+                    )}
+                  </button>
                 </div>
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  className={`login-input pl-10 pr-10 ${
-                    errors.password ? 'border-red-300 focus:ring-red-500' : ''
-                  }`}
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-slate-400" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-slate-400" />
-                  )}
-                </button>
               </div>
               {errors.password && (
                 <p className="mt-1 text-sm text-red-600">{errors.password}</p>
