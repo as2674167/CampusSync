@@ -5,7 +5,7 @@ const Gallery  = require('../models/Gallery');
 const imagekit = require('../config/imagekit');
 const { authenticate, authorize, optionalAuth } = require('../middleware/auth');
 
-// Multer — same memoryStorage pattern as your existing upload.js
+// Multer — memoryStorage
 const storage = multer.memoryStorage();
 const fileFilter = (req, file, cb) => {
   const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
@@ -24,6 +24,63 @@ const handleUploadError = (err, req, res, next) => {
   }
   next();
 };
+
+// ── GET /api/gallery/events  — one card per event (grouped) ──────────────────
+router.get('/events', optionalAuth, async (req, res) => {
+  try {
+    const groups = await Gallery.aggregate([
+      { $match: { event: { $ne: null } } },
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: '$event',
+          photoCount: { $sum: 1 },
+          cover:      { $first: '$thumbnailUrl' },
+          coverFull:  { $first: '$imageUrl' },
+          latestAt:   { $max: '$createdAt' },
+        },
+      },
+      { $sort: { latestAt: -1 } },
+      {
+        $lookup: {
+          from:         'events',
+          localField:   '_id',
+          foreignField: '_id',
+          as:           'eventData',
+        },
+      },
+      { $unwind: '$eventData' },
+      {
+        $project: {
+          _id:           1,
+          photoCount:    1,
+          cover:         { $ifNull: ['$cover', '$coverFull'] },
+          latestAt:      1,
+          eventTitle:    '$eventData.title',
+          eventDate:     '$eventData.date',
+          eventCategory: '$eventData.category',
+        },
+      },
+    ]);
+    res.json({ success: true, data: groups });
+  } catch (error) {
+    console.error('GET /gallery/events error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// ── GET /api/gallery/events/:eventId  — all photos for one event ──────────────
+router.get('/events/:eventId', optionalAuth, async (req, res) => {
+  try {
+    const photos = await Gallery.find({ event: req.params.eventId })
+      .populate('uploader', 'name role')
+      .sort({ createdAt: -1 });
+    res.json({ success: true, data: photos });
+  } catch (error) {
+    console.error('GET /gallery/events/:eventId error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 // ── GET /api/gallery  (Public — guests can view) ──────────────────────────────
 router.get('/', optionalAuth, async (req, res) => {
@@ -67,11 +124,9 @@ router.post(
       if (!req.file)
         return res.status(400).json({ message: 'Please select an image to upload' });
 
-      const { title, description = '', tags = '' } = req.body;
-      if (!title || !title.trim())
-        return res.status(400).json({ message: 'Title is required' });
+      const { title, description = '', tags = '', eventId = null } = req.body;
+// title is optional — fallback to 'Untitled' if not provided
 
-      // Upload buffer to ImageKit
       const fileName = `gallery_${req.user._id}_${Date.now()}_${req.file.originalname}`;
       const uploadResponse = await imagekit.upload({
         file:              req.file.buffer,
@@ -81,7 +136,6 @@ router.post(
         tags:              tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [],
       });
 
-      // Build a 400×400 thumbnail via ImageKit URL transformation
       const thumbnailUrl = imagekit.url({
         src: uploadResponse.url,
         transformation: [{ height: 400, width: 400, cropMode: 'extract', focus: 'auto' }],
@@ -92,16 +146,17 @@ router.post(
         : [];
 
       const image = await Gallery.create({
-        title:        title.trim(),
-        description:  description.trim(),
-        imageUrl:     uploadResponse.url,
-        imageFileId:  uploadResponse.fileId,
-        thumbnailUrl,
-        uploader:     req.user._id,
-        uploaderName: req.user.name,
-        uploaderRole: req.user.role,
-        tags:         parsedTags,
-      });
+      title:        title?.trim() || 'Untitled',   // ← fallback
+      description:  description.trim(),
+      imageUrl:     uploadResponse.url,
+      imageFileId:  uploadResponse.fileId,
+      thumbnailUrl,
+      uploader:     req.user._id,
+      uploaderName: req.user.name,
+      uploaderRole: req.user.role,
+      tags:         parsedTags,
+      event:        eventId || null,               // ← save event link
+});
 
       await image.populate('uploader', 'name role');
       res.status(201).json({ message: 'Image uploaded successfully', image });
@@ -123,7 +178,6 @@ router.delete('/:id', authenticate, async (req, res) => {
     if (!isOwner && !isAdmin)
       return res.status(403).json({ message: 'Not authorized to delete this image' });
 
-    // Delete from ImageKit CDN
     try { await imagekit.deleteFile(image.imageFileId); }
     catch (ikErr) { console.error('ImageKit delete error:', ikErr.message); }
 

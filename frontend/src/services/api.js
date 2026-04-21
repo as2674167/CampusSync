@@ -150,6 +150,8 @@ export const galleryAPI = {
   }),
   deleteImage: (id) => api.delete(`/gallery/${id}`),
   toggleLike:  (id) => api.post(`/gallery/${id}/like`),
+  getEventGroups: ()              => api.get('/gallery/events'),
+  getEventPhotos: (eventId)       => api.get(`/gallery/events/${eventId}`),
 }
 
 // Notices API
