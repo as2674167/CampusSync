@@ -167,20 +167,21 @@ const RegisterPage = () => {
 
         <div className="register-card-main animate-fadeInUp">
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Name */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-slate-200 mb-1">
                 Full Name *
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+              <div className="relative flex items-center">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 border border-white/10 mr-2">
                   <User className="h-5 w-5 text-slate-300" />
-                </div>
+                </span>
                 <input
                   id="name"
                   name="name"
                   type="text"
                   autoComplete="name"
-                  className={`register-input pl-10 ${errors.name ? 'border-red-300 focus:ring-red-500' : ''}`}
+                  className={`register-input flex-1 ${errors.name ? 'border-red-300 focus:ring-red-500' : ''}`}
                   placeholder="Enter your full name"
                   value={formData.name}
                   onChange={handleChange}
@@ -192,20 +193,21 @@ const RegisterPage = () => {
               )}
             </div>
 
+            {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-slate-200 mb-1">
                 Email Address *
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+              <div className="relative flex items-center">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 border border-white/10 mr-2">
                   <Mail className="h-5 w-5 text-slate-300" />
-                </div>
+                </span>
                 <input
                   id="email"
                   name="email"
                   type="email"
                   autoComplete="email"
-                  className={`register-input pl-10 ${errors.email ? 'border-red-300 focus:ring-red-500' : ''}`}
+                  className={`register-input flex-1 ${errors.email ? 'border-red-300 focus:ring-red-500' : ''}`}
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
@@ -217,6 +219,7 @@ const RegisterPage = () => {
               )}
             </div>
 
+            {/* Role */}
             <div>
               <label htmlFor="role" className="block text-sm font-medium text-slate-200 mb-1">
                 Role *
@@ -238,20 +241,21 @@ const RegisterPage = () => {
               </p>
             </div>
 
+            {/* Admin key */}
             {formData.role === 'admin' && (
               <div>
                 <label htmlFor="adminKey" className="block text-sm font-medium text-slate-200 mb-1">
                   Admin Secret Key *
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                <div className="relative flex items-center">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 border border-white/10 mr-2">
                     <Lock className="h-5 w-5 text-slate-300" />
-                  </div>
+                  </span>
                   <input
                     id="adminKey"
                     name="adminKey"
                     type="password"
-                    className={`register-input pl-10 ${errors.adminKey ? 'border-red-300 focus:ring-red-500' : ''}`}
+                    className={`register-input flex-1 ${errors.adminKey ? 'border-red-300 focus:ring-red-500' : ''}`}
                     placeholder="Enter admin secret key"
                     value={formData.adminKey}
                     onChange={handleChange}
@@ -264,20 +268,21 @@ const RegisterPage = () => {
               </div>
             )}
 
+            {/* Student ID */}
             {formData.role === 'student' && (
               <div>
                 <label htmlFor="studentId" className="block text-sm font-medium text-slate-200 mb-1">
                   Student ID *
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                <div className="relative flex items-center">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 border border-white/10 mr-2">
                     <CreditCard className="h-5 w-5 text-slate-300" />
-                  </div>
+                  </span>
                   <input
                     id="studentId"
                     name="studentId"
                     type="text"
-                    className={`register-input pl-10 ${errors.studentId ? 'border-red-300 focus:ring-red-500' : ''}`}
+                    className={`register-input flex-1 ${errors.studentId ? 'border-red-300 focus:ring-red-500' : ''}`}
                     placeholder="Enter your student ID"
                     value={formData.studentId}
                     onChange={handleChange}
@@ -290,18 +295,19 @@ const RegisterPage = () => {
               </div>
             )}
 
+            {/* Department */}
             <div>
               <label htmlFor="department" className="block text-sm font-medium text-slate-200 mb-1">
                 Department *
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+              <div className="relative flex items-center">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 border border-white/10 mr-2">
                   <Building className="h-5 w-5 text-slate-300" />
-                </div>
+                </span>
                 <select
                   id="department"
                   name="department"
-                  className={`register-input pl-10 ${errors.department ? 'border-red-300 focus:ring-red-500' : ''}`}
+                  className={`register-input flex-1 ${errors.department ? 'border-red-300 focus:ring-red-500' : ''}`}
                   value={formData.department}
                   onChange={handleChange}
                   disabled={isLoading}
@@ -317,19 +323,20 @@ const RegisterPage = () => {
               )}
             </div>
 
+            {/* Phone */}
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-slate-200 mb-1">
                 Phone Number (optional)
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+              <div className="relative flex items-center">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 border border-white/10 mr-2">
                   <Phone className="h-5 w-5 text-slate-300" />
-                </div>
+                </span>
                 <input
                   id="phone"
                   name="phone"
                   type="tel"
-                  className={`register-input pl-10 ${errors.phone ? 'border-red-300 focus:ring-red-500' : ''}`}
+                  className={`register-input flex-1 ${errors.phone ? 'border-red-300 focus:ring-red-500' : ''}`}
                   placeholder="Enter your phone number"
                   value={formData.phone}
                   onChange={handleChange}
@@ -341,80 +348,87 @@ const RegisterPage = () => {
               )}
             </div>
 
+            {/* Password */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-slate-200 mb-1">
                 Password *
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+              <div className="relative flex items-center">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 border border-white/10 mr-2">
                   <Lock className="h-5 w-5 text-slate-300" />
+                </span>
+                <div className="relative flex-1">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    className={`register-input w-full pr-10 ${errors.password ? 'border-red-300 focus:ring-red-500' : ''}`}
+                    placeholder="Create a password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-300 hover:text-sky-200"
+                    onClick={() => setShowPassword(!showPassword)}
+                    disabled={isLoading}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
                 </div>
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  className={`register-input pl-10 pr-10 ${errors.password ? 'border-red-300 focus:ring-red-500' : ''}`}
-                  placeholder="Create a password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-300 hover:text-sky-200"
-                  onClick={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
               </div>
               {errors.password && (
                 <p className="mt-1 text-sm text-red-400">{errors.password}</p>
               )}
             </div>
 
+            {/* Confirm Password */}
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-200 mb-1">
                 Confirm Password *
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+              <div className="relative flex items-center">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 border border-white/10 mr-2">
                   <Lock className="h-5 w-5 text-slate-300" />
+                </span>
+                <div className="relative flex-1">
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    className={`register-input w-full pr-10 ${errors.confirmPassword ? 'border-red-300 focus:ring-red-500' : ''}`}
+                    placeholder="Confirm your password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-300 hover:text-sky-200"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    disabled={isLoading}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
                 </div>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  className={`register-input pl-10 pr-10 ${errors.confirmPassword ? 'border-red-300 focus:ring-red-500' : ''}`}
-                  placeholder="Confirm your password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-300 hover:text-sky-200"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  disabled={isLoading}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
               </div>
               {errors.confirmPassword && (
                 <p className="mt-1 text-sm text-red-400">{errors.confirmPassword}</p>
               )}
             </div>
 
+            {/* Terms */}
             <div className="flex items-start">
               <input
                 id="terms"
@@ -436,6 +450,7 @@ const RegisterPage = () => {
               </label>
             </div>
 
+            {/* Submit */}
             <button
               type="submit"
               disabled={isLoading}
